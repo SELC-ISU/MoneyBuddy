@@ -1,18 +1,13 @@
-import javax.swing.*;
+import javax.swing.JFrame;
+
+
 
 public class Main {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                JFrame frame = new JFrame("Hello World Jframe");
-                frame.setSize(500, 400);
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setVisible(true);
-            }
-        });
-
-
-
+        Gui gui = new Gui();
+        gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        gui.setSize(600,400);
+        gui.setVisible(true);
 
     }
 }
