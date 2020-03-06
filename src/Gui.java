@@ -5,22 +5,28 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.*;
 
 
 public class Gui extends JFrame implements ActionListener {
-    private JLabel item1, item2;
+    private int need;
+    private JLabel item1, item2, item3;
     private JButton button;
     private JMenuBar bar;
     private JMenu file, help;
     private JMenuItem newItem, edit,close, extra,search;
-    private Container amount,  memo, date;
+    private Container amount,  memo, date, check;
     private JTextField field, field2;
     private SpinnerModel model;
     private JSpinner spinner;
     private JFormattedTextField ftf;
+    private String inputText,  inputText2;
+    private Date inputDate;
+    private ArrayList<JLabel> label;
+    private JCheckBox checkbox;
 
     public Gui(){
         super("Money Buddy");
@@ -29,9 +35,9 @@ public class Gui extends JFrame implements ActionListener {
         amount = getContentPane();
         memo = getContentPane();
         date = getContentPane();
+        check = getContentPane();
 
-
-        item2 = new JLabel("Memo");
+        item2 = new JLabel("Memo: ");
         button = new JButton("Submit");
         bar = new JMenuBar();
         file = new JMenu("File");
@@ -43,6 +49,7 @@ public class Gui extends JFrame implements ActionListener {
         search = new JMenuItem("Search");
         field = new JTextField(10);
         field2 = new JTextField(10);
+        checkbox = new JCheckBox("Need?");
 
 
         Calendar calendar = Calendar.getInstance();
@@ -54,7 +61,7 @@ public class Gui extends JFrame implements ActionListener {
         model = new SpinnerDateModel(initDate, earliestDate, latestDate, Calendar.YEAR);
 
         spinner = new JSpinner(model);
-        spinner.setEditor(new JSpinner.DateEditor(spinner,"dd/MM/yyyy"));
+        spinner.setEditor(new JSpinner.DateEditor(spinner,"yyyy-MM-dd"));
 
         bar.add(file);
         file.add(newItem);
@@ -72,6 +79,8 @@ public class Gui extends JFrame implements ActionListener {
         memo.add(field2, BorderLayout.SOUTH);
         memo.add(button);
         date.add(spinner);
+        check.add(checkbox);
+
         setJMenuBar(bar);
 
 
@@ -99,17 +108,26 @@ public class Gui extends JFrame implements ActionListener {
 
         }
         System.out.println("Hehe just pressed a button xD");
-        String inputText = field.getText();
-        String inputText2 = field2.getText();
+        inputText = field.getText();
+        inputText2 = field2.getText();
         if (!(inputText.equals("")) || !(inputText2.equals(""))){
             System.out.println(inputText + " is what is in the amount text box.");
             field.setText("");
             System.out.println(inputText2 + " is what is in the memo text box");
             field2.setText("");
-            Date inputDate = (Date)spinner.getValue();
+            inputDate = (Date)spinner.getValue();
             System.out.println(inputDate);
-
+            if(checkbox.isSelected()){
+                need = 1;
+                checkbox.setSelected(false);
+            } else {
+                need = 0;
+            }
+            System.out.println(need);
+            AddEntry(inputText,  inputText2, inputDate, need);
         }
+    }
+    public static void AddEntry(String amount, String memo, Date date, int need) {
     }
 
 }
