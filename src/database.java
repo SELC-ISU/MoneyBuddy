@@ -1,5 +1,6 @@
 import java.io.File;
 import java.sql.*;
+import java.util.Date;
 import java.util.Scanner;
 
 /**
@@ -17,7 +18,7 @@ public class database {
 
     /**
      * Constructor; Builds a new database object
-     * @param name The name of the database; should be user-supplied
+     * @param name The name of the database; should be user-supplied. If it exists, a connection will be made. If it does not exist, it will be created and initialized
      */
     public database(String name) {
         /* -- Sets up path variables -- */
@@ -56,13 +57,13 @@ public class database {
                     "CREATE TABLE IF NOT EXISTS transactions(id INTEGER PRIMARY KEY AUTOINCREMENT, date DATE NOT NULL, amount FLOAT NOT NULL, memo VARCHAR(255), need TINYINT)"
             );
         } catch (SQLException e) {
-            System.out.println("Error initializing the 'transactions' table");
             e.printStackTrace();
         }
 
         try {
             statement.execute(); //Actually runs the prepared statement
         } catch (SQLException e) {
+            System.out.println("Error initializing the 'transactions' table");
             e.printStackTrace();
         }
         /* -- End setting up database structure -- */
@@ -110,27 +111,25 @@ public class database {
 
     /**
      * Mutator; Inserts a new transactions into the database
-     * @param date The date of the transaction in ISO8601 format (YYYY-MM-DD). If they are entering the date as today, you can enter "today" or "now" or "curdate". These keywords will enumerate to the current date
+     * @param dateObj The date of the transaction
      * @param amount The monetary amount of the transaction; if you spend money, this should be negative. If you earned money, this should be positive
      * @param memo A note to tell the user what the transaction was for
      * @param need Binary; 1 if the transaction was a "need" or was necessary, or 0 if the transaction was a "want" or a pleasure expense. If amount is positive, this value will not be taken into account and will be entered as NULL in the database
      * @return error codes: 0 is okay, 1 is a date format error, 2 means that something was left blank (if amount > 0, "need" will not be parsed, but it must be filled), 3 means that something other than 0 or 1 was put into "need"
      */
-    public int insertTransaction(String date, double amount, String memo, int need) {
+    public int insertTransaction(java.util.Date dateObj, double amount, String memo, int need) {
+        String date = dateObj.getYear() + "-" + Integer.toString(dateObj.getMonth() + 1) + "-" + dateObj.getDate(); //Formats the date object into ISO8601 format, which MySQL likes
+        System.out.println(date);
         /* -- Sanity checks -- */
         if (memo.isBlank() || date.isBlank() || amount == 0) { //If memo or date has no meaningful characters (not counting whitespace), or amount is zero
             return 2;
-        } else if (!date.matches("\\d{4}-\\d{2}-\\d{2}")) { //Regex; If it matches the format NNNN-NN-NN (N = some number)
-            return 1;
         } else if (amount < 0 && !(need == 0 || need == 1)) { // If amount is negative (this is an expense) and need is not 0 or 1
             return 3;
         }
 
-        Scanner scan = new Scanner(date).useDelimiter("-");
-
-        int year = scan.nextInt();
-        int month = scan.nextInt();
-        int day = scan.nextInt();
+        int year = dateObj.getYear();
+        int month = dateObj.getMonth();
+        int day = dateObj.getDate();
 
         if (year < 0 || month > 12 || month <= 0 || day <= 0 || day > 31) { //If year is negative, month isn't between 1 and 12, or day isn't between 1 and 31, error
             return 1;
@@ -139,12 +138,45 @@ public class database {
 
         String insertString = "INSERT INTO transactions(date,memo,amount,need) VALUES ('" + date + "','" + memo + "'," + amount + "," + need + ")"; //Forms the table insert statement
         try {
-            PreparedStatement stmt = dbcon.prepareStatement(insertString);
-            stmt.execute();
+            PreparedStatement stmt = dbcon.prepareStatement(insertString); //Formats the statement from the string
+            stmt.execute(); //Runs the statement
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return 0;
     }
+
+    /**
+     * Mutator; Inserts a new transactions into the database under the current date
+     * @param amount The monetary amount of the transaction; if you spend money, this should be negative. If you earned money, this should be positive
+     * @param memo A note to tell the user what the transaction was for
+     * @param need Binary; 1 if the transaction was a "need" or was necessary, or 0 if the transaction was a "want" or a pleasure expense. If amount is positive, this value will not be taken into account and will be entered as NULL in the database
+     * @return error codes: 0 is okay, 1 is a date format error, 2 means that something was left blank (if amount > 0, "need" will not be parsed, but it must be filled), 3 means that something other than 0 or 1 was put into "need"
+     */
+    public int insertTransaction(double amount, String memo, int need) {
+        /* -- Sanity checks -- */
+        if (memo.isBlank() || amount == 0) { //If memo or date has no meaningful characters (not counting whitespace), or amount is zero
+            return 2;
+        } else if (amount < 0 && !(need == 0 || need == 1)) { // If amount is negative (this is an expense) and need is not 0 or 1
+            return 3;
+        }
+        /* -- End sanity checks -- */
+
+        String insertString = "INSERT INTO transactions(date,memo,amount,need) VALUES (date('now'),'" + memo + "'," + amount + "," + need + ")"; //Forms the table insert statement
+        try {
+            PreparedStatement stmt = dbcon.prepareStatement(insertString); //Formats the statement from the string
+            stmt.execute(); //Runs the statement
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+// Consider that you could create multiple variables which ALL had references to the same object; the idea of "the name of" the object instance is meaningless, and this case illustrates that.     public String[] getTransactions(void) {
+//        String out[]; //Contains the string array to output
+//
+//
+//    }
 }
