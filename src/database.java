@@ -1,5 +1,6 @@
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -23,15 +24,15 @@ public class database {
     public database(String name) {
         /* -- Sets up path variables -- */
         dbName = name;
-        dbPath = System.getProperty("user.home");
-        dirPath = System.getProperty("user.home");
+        dbPath = System.getProperty("user.home"); //Will be used to store the absolute path of the db file
+        dirPath = System.getProperty("user.home"); //Will be used to store the absolute path of the .MoneyBuddy folder
         File f; // Used to create a new folder if necessary
 
-        if (System.getProperty("os.name").equals("Windows")) {
-            dbPath = dbPath.concat("\\.MoneyBuddy\\" + name + ".db"); //Sets the path to use forward slashes for Windows file paths
-            dirPath = dirPath.concat("\\.MoneyBuddy\\");
+        if (System.getProperty("os.name").contains("Windows")) {
+            dbPath = dbPath.concat("/.MoneyBuddy/" + name + ".db"); //Sets the path to use forward slashes for Windows file paths
+            dirPath = dirPath.concat("/.MoneyBuddy/");
             dbPath = "jdbc:sqlite:" + dbPath;
-        } else if (System.getProperty("os.name").equals("Linux")) {
+        } else if (System.getProperty("os.name").contains("Linux")) {
             dbPath = dbPath.concat("/.MoneyBuddy/" + name + ".db"); //Sets the path to use backslashes for Linux file paths (the better way)
             dirPath = dirPath.concat("/.MoneyBuddy/");
             dbPath = "jdbc:sqlite:" + dbPath;
@@ -174,9 +175,29 @@ public class database {
         return 0;
     }
 
-// Consider that you could create multiple variables which ALL had references to the same object; the idea of "the name of" the object instance is meaningless, and this case illustrates that.     public String[] getTransactions(void) {
-//        String out[]; //Contains the string array to output
-//
-//
-//    }
+    /**
+     * Provides an ASCII-table formatted ArrayList of all the contents in the database
+     * @return
+     */
+    public ArrayList getTransactions() {
+        ArrayList<String> out = new ArrayList<String>();
+        ResultSet rs;
+
+        out.add("ID\t|\tDate\t\t|\tMemo\t|\tAmount");
+        out.add("--------------------------------------------");
+
+        try {
+            PreparedStatement stmt = dbcon.prepareStatement("SELECT id,date,memo,amount FROM transactions");
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                out.add(rs.getString("id") + "\t|\t" + rs.getString("date") + "\t|\t" + rs.getString("memo") + "\t|\t" + rs.getString("amount"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return out;
+    }
 }
