@@ -153,7 +153,7 @@ public class database {
      * @param amount The monetary amount of the transaction; if you spend money, this should be negative. If you earned money, this should be positive
      * @param memo A note to tell the user what the transaction was for
      * @param need Binary; 1 if the transaction was a "need" or was necessary, or 0 if the transaction was a "want" or a pleasure expense. If amount is positive, this value will not be taken into account and will be entered as NULL in the database
-     * @return error codes: 0 is okay, 1 is a date format error, 2 means that something was left blank (if amount > 0, "need" will not be parsed, but it must be filled), 3 means that something other than 0 or 1 was put into "need"
+     * @return error codes: 0 is okay, 2 means that something was left blank (if amount > 0, "need" will not be parsed, but it must be filled), 3 means that something other than 0 or 1 was put into "need"
      */
     public int insertTransaction(double amount, String memo, int need) {
         /* -- Sanity checks -- */
@@ -176,24 +176,51 @@ public class database {
     }
 
     /**
+     * Removes the transaction of a particular ID number.
+     * @param id the ID number of the entry to remove from the database. Note that ID numbers may not line up perfectly with the row number, since previously deleted entries are not backfilled
+     * @return 0 if entry was deleted successfully, otherwise returns -1 if there was an error (either database is read-only or doesn't exist somehow)
+     */
+    public int removeTransaction(int id) {
+        try {
+            PreparedStatement stmt = dbcon.prepareStatement("DELETE FROM transactions WHERE id=" + id);
+            stmt.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+
+        return 0;
+    }
+
+    /**
      * Provides an ASCII-table formatted ArrayList of all the contents in the database
-     * @return
+     * @return ArrayList of formatted database entries, starting with a header and a divider
      */
     public ArrayList getTransactions() {
         ArrayList<String> out = new ArrayList<String>();
         ResultSet rs;
 
-        out.add("ID\t|\tDate\t\t|\tMemo\t|\tAmount");
-        out.add("--------------------------------------------");
+        out.add("ID\t|\tDate\t\t|\tAmount\t|\tNecessity\t|\tMemo"); // Prepends header
+        out.add("-------------------------------------------------------------------"); // Adds divider
 
         try {
-            PreparedStatement stmt = dbcon.prepareStatement("SELECT id,date,memo,amount FROM transactions");
+            PreparedStatement stmt = dbcon.prepareStatement("SELECT id,date,amount,need,memo FROM transactions");
             rs = stmt.executeQuery();
 
+            // Appends each entry to the ArrayList
             while (rs.next()) {
-                out.add(rs.getString("id") + "\t|\t" + rs.getString("date") + "\t|\t" + rs.getString("memo") + "\t|\t" + rs.getString("amount"));
-            }
+                String need = "unknown";
 
+                // Classifies need/want
+                if (rs.getInt("need") == 1) {
+                    need = "need";
+                } else if (rs.getInt("need") == 0) {
+                    need = "want";
+                }
+
+                // Appends to ArrayList
+                out.add(rs.getString("id") + "\t|\t" + rs.getString("date") + "\t|\t" + rs.getString("amount") + "\t|\t" + need + "\t\t|\t" + rs.getString("memo"));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
