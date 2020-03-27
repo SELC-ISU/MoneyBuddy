@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -23,8 +25,8 @@ public class Gui extends JFrame implements ActionListener {
     private SpinnerModel model;
     private JSpinner spinner;
     private JFormattedTextField ftf;
-    private String inputText,  inputText2;
-    private Date inputDate;
+    private String amountInput,  memoInput;
+    private Date dateInput;
     private ArrayList<JLabel> label;
     private JCheckBox checkbox;
 
@@ -36,6 +38,8 @@ public class Gui extends JFrame implements ActionListener {
         memo = getContentPane();
         date = getContentPane();
         check = getContentPane();
+
+        this.setIconImage(new ImageIcon("media/icon-apple-flyingmoney.png").getImage());
 
         item2 = new JLabel("Memo: ");
         button = new JButton("Submit");
@@ -50,7 +54,6 @@ public class Gui extends JFrame implements ActionListener {
         field = new JTextField(10);
         field2 = new JTextField(10);
         checkbox = new JCheckBox("Need?");
-
 
         Calendar calendar = Calendar.getInstance();
         Date initDate = calendar.getTime();
@@ -108,15 +111,15 @@ public class Gui extends JFrame implements ActionListener {
 
         }
         System.out.println("Hehe just pressed a button xD");
-        inputText = field.getText();
-        inputText2 = field2.getText();
-        if (!(inputText.equals("")) || !(inputText2.equals(""))){
-            System.out.println(inputText + " is what is in the amount text box.");
+        amountInput = field.getText();
+        memoInput = field2.getText();
+        if (!(amountInput.equals("")) || !(memoInput.equals(""))){
+            System.out.println(amountInput + " is what is in the amount text box.");
             field.setText("");
-            System.out.println(inputText2 + " is what is in the memo text box");
+            System.out.println(memoInput + " is what is in the memo text box");
             field2.setText("");
-            inputDate = (Date)spinner.getValue();
-            System.out.println(inputDate);
+            dateInput = (Date)spinner.getValue();
+            System.out.println(dateInput);
             if(checkbox.isSelected()){
                 need = 1;
                 checkbox.setSelected(false);
@@ -124,10 +127,12 @@ public class Gui extends JFrame implements ActionListener {
                 need = 0;
             }
             System.out.println(need);
-            AddEntry(inputText,  inputText2, inputDate, need);
+            AddEntry(amountInput,  memoInput, dateInput, need);
         }
     }
     public static void AddEntry(String amount, String memo, Date date, int need) {
+        database UserDB = new database("UserDB"); // Ideally in the future, we will allow users to switch between databases to manage different checkbooks. For now, we'll just have 1 database called "UserDB"
+        UserDB.insertTransaction(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), Double.parseDouble(amount), memo, need); // Feeds input into the database, converting deprecated Date object into LocalDate
     }
 
 }

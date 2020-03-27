@@ -1,8 +1,7 @@
 import java.io.File;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Scanner;
 
 /**
  * Represents a database instance. This is the man in between everything else and the backend database, implementing in JDBC.
@@ -29,8 +28,8 @@ public class database {
         File f; // Used to create a new folder if necessary
 
         if (System.getProperty("os.name").contains("Windows")) {
-            dbPath = dbPath.concat("/.MoneyBuddy/" + name + ".db"); //Sets the path to use forward slashes for Windows file paths
-            dirPath = dirPath.concat("/.MoneyBuddy/");
+            dbPath = dbPath.concat("\\.MoneyBuddy\\" + name + ".db"); //Sets the path to use forward slashes for Windows file paths (the stupid way)
+            dirPath = dirPath.concat("\\.MoneyBuddy\\");
             dbPath = "jdbc:sqlite:" + dbPath;
         } else if (System.getProperty("os.name").contains("Linux")) {
             dbPath = dbPath.concat("/.MoneyBuddy/" + name + ".db"); //Sets the path to use backslashes for Linux file paths (the better way)
@@ -118,26 +117,8 @@ public class database {
      * @param need Binary; 1 if the transaction was a "need" or was necessary, or 0 if the transaction was a "want" or a pleasure expense. If amount is positive, this value will not be taken into account and will be entered as NULL in the database
      * @return error codes: 0 is okay, 1 is a date format error, 2 means that something was left blank (if amount > 0, "need" will not be parsed, but it must be filled), 3 means that something other than 0 or 1 was put into "need"
      */
-    public int insertTransaction(java.util.Date dateObj, double amount, String memo, int need) {
-        String date = dateObj.getYear() + "-" + Integer.toString(dateObj.getMonth() + 1) + "-" + dateObj.getDate(); //Formats the date object into ISO8601 format, which MySQL likes
-        System.out.println(date);
-        /* -- Sanity checks -- */
-        if (memo.isBlank() || date.isBlank() || amount == 0) { //If memo or date has no meaningful characters (not counting whitespace), or amount is zero
-            return 2;
-        } else if (amount < 0 && !(need == 0 || need == 1)) { // If amount is negative (this is an expense) and need is not 0 or 1
-            return 3;
-        }
-
-        int year = dateObj.getYear();
-        int month = dateObj.getMonth();
-        int day = dateObj.getDate();
-
-        if (year < 0 || month > 12 || month <= 0 || day <= 0 || day > 31) { //If year is negative, month isn't between 1 and 12, or day isn't between 1 and 31, error
-            return 1;
-        }
-        /* -- End sanity checks -- */
-
-        String insertString = "INSERT INTO transactions(date,memo,amount,need) VALUES ('" + date + "','" + memo + "'," + amount + "," + need + ")"; //Forms the table insert statement
+    public int insertTransaction(LocalDate dateObj, double amount, String memo, int need) {
+        String insertString = "INSERT INTO transactions(date,memo,amount,need) VALUES ('" + dateObj.toString() + "','" + memo + "'," + amount + "," + need + ")"; //Forms the table insert statement
         try {
             PreparedStatement stmt = dbcon.prepareStatement(insertString); //Formats the statement from the string
             stmt.execute(); //Runs the statement
