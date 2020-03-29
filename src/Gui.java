@@ -31,6 +31,7 @@ public class Gui extends JFrame implements ActionListener {
     private JCheckBox checkbox;
 
     public Gui(){
+        //Declaring Panes
         super("Money Buddy");
         setLayout(new FlowLayout());
         item1 = new JLabel("Amount: ");
@@ -38,9 +39,9 @@ public class Gui extends JFrame implements ActionListener {
         memo = getContentPane();
         date = getContentPane();
         check = getContentPane();
-
+        //Icon
         this.setIconImage(new ImageIcon("media/icon-apple-flyingmoney.png").getImage());
-
+        //declaring new objects
         item2 = new JLabel("Memo: ");
         button = new JButton("Submit");
         bar = new JMenuBar();
@@ -54,7 +55,7 @@ public class Gui extends JFrame implements ActionListener {
         field = new JTextField(10);
         field2 = new JTextField(10);
         checkbox = new JCheckBox("Need?");
-
+        //declaring for dates
         Calendar calendar = Calendar.getInstance();
         Date initDate = calendar.getTime();
         calendar.add(Calendar.YEAR, -100);
@@ -62,10 +63,10 @@ public class Gui extends JFrame implements ActionListener {
         calendar.add(Calendar.YEAR, 200);
         Date latestDate = calendar.getTime();
         model = new SpinnerDateModel(initDate, earliestDate, latestDate, Calendar.YEAR);
-
+        //declaration for spinner to work with dates
         spinner = new JSpinner(model);
         spinner.setEditor(new JSpinner.DateEditor(spinner,"yyyy-MM-dd"));
-
+        //declaration of the header menu (forgetting the name of it)
         bar.add(file);
         file.add(newItem);
         file.add(edit);
@@ -74,7 +75,7 @@ public class Gui extends JFrame implements ActionListener {
         file.add(extra);
         help.add(search);
         bar.add(help);
-
+        //Adding certain objects to certain panes
         add(item1);
         amount.add(field, BorderLayout.SOUTH);
         amount.add(button);
@@ -86,7 +87,7 @@ public class Gui extends JFrame implements ActionListener {
 
         setJMenuBar(bar);
 
-
+        //button action declaration
         search.addActionListener(this::actionPerformed);
         button.addActionListener(this);
         field.addActionListener(this);
@@ -94,6 +95,7 @@ public class Gui extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e){
         String name = e.getActionCommand();
+        //Search fuction in the help tab
         if(name.equals("Search")) {
             URI uri = null;
             try {
@@ -107,6 +109,7 @@ public class Gui extends JFrame implements ActionListener {
                 ex.printStackTrace();
             }
         }
+        //Submit button action
         else if (name.equals("Submit")){
 
         }
@@ -133,6 +136,9 @@ public class Gui extends JFrame implements ActionListener {
     public static void AddEntry(String amount, String memo, Date date, int need) {
         database UserDB = new database("UserDB"); // Ideally in the future, we will allow users to switch between databases to manage different checkbooks. For now, we'll just have 1 database called "UserDB"
         UserDB.insertTransaction(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), Double.parseDouble(amount), memo, need); // Feeds input into the database, converting deprecated Date object into LocalDate
+
+        //TODO
+        //Add something to make the entire database to show up on the window
     }
 
 }

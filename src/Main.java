@@ -1,9 +1,9 @@
 import javax.swing.JFrame;
 
 
-
-public class Main {
+public class Main{
     public static void main(String[] args) {
+        //creating the GUI
         Gui gui = new Gui();
         gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gui.setSize(800,600);
