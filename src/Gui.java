@@ -15,12 +15,13 @@ import javax.swing.*;
 
 public class Gui extends JFrame implements ActionListener {
     private int need;
+    private ArrayList<JLabel> entries = new ArrayList<JLabel>();
     private JLabel item1, item2, item3;
     private JButton button;
     private JMenuBar bar;
     private JMenu file, help;
     private JMenuItem newItem, edit,close, extra,search;
-    private Container amount,  memo, date, check;
+    private Container amount,  memo, date, check, entriesContainer;
     private JTextField field, field2;
     private SpinnerModel model;
     private JSpinner spinner;
@@ -39,6 +40,7 @@ public class Gui extends JFrame implements ActionListener {
         memo = getContentPane();
         date = getContentPane();
         check = getContentPane();
+        entriesContainer = getContentPane();
         //Icon
         this.setIconImage(new ImageIcon("media/icon-apple-flyingmoney.png").getImage());
         //declaring new objects
@@ -131,14 +133,22 @@ public class Gui extends JFrame implements ActionListener {
             }
             System.out.println(need);
             AddEntry(amountInput,  memoInput, dateInput, need);
+            revalidate();
+            repaint();
         }
     }
-    public static void AddEntry(String amount, String memo, Date date, int need) {
+    public void AddEntry(String amount, String memo, Date date, int need) {
         database UserDB = new database("UserDB"); // Ideally in the future, we will allow users to switch between databases to manage different checkbooks. For now, we'll just have 1 database called "UserDB"
         UserDB.insertTransaction(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), Double.parseDouble(amount), memo, need); // Feeds input into the database, converting deprecated Date object into LocalDate
 
         //TODO
         //Add something to make the entire database to show up on the window
+        //Current problem:not making a database for my windows computer.
+        JLabel temp = new JLabel((String) UserDB.getTransactions().get(0));
+        System.out.println((String) UserDB.getTransactions().get(0)); //works but with no values
+        entries.add(temp);//works
+        entriesContainer.add(entries.get(0));//Works
+
     }
 
 }
