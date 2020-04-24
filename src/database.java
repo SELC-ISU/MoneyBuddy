@@ -66,6 +66,12 @@ public class database {
             e.printStackTrace();
         }
         /* -- End setting up database structure -- */
+
+        try {
+            dbcon.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -117,10 +123,15 @@ public class database {
      * @return error codes: 0 is okay, 1 is a date format error, 2 means that something was left blank (if amount > 0, "need" will not be parsed, but it must be filled), 3 means that something other than 0 or 1 was put into "need"
      */
     public int insertTransaction(LocalDate dateObj, double amount, String memo, int need) {
-        String insertString = "INSERT INTO transactions(date,memo,amount,need) VALUES ('" + dateObj.toString() + "','" + memo + "'," + amount + "," + need + ")"; //Forms the table insert statement
         try {
+            dbcon = DriverManager.getConnection(dbPath);
+
+            String insertString = "INSERT INTO transactions(date,memo,amount,need) VALUES ('" + dateObj.toString() + "','" + memo + "'," + amount + "," + need + ")"; //Forms the table insert statement
             PreparedStatement stmt = dbcon.prepareStatement(insertString); //Formats the statement from the string
+
             stmt.execute(); //Runs the statement
+
+            dbcon.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -129,41 +140,18 @@ public class database {
     }
 
     /**
-     * Mutator; Inserts a new transactions into the database under the current date
-     * @param amount The monetary amount of the transaction; if you spend money, this should be negative. If you earned money, this should be positive
-     * @param memo A note to tell the user what the transaction was for
-     * @param need Binary; 1 if the transaction was a "need" or was necessary, or 0 if the transaction was a "want" or a pleasure expense. If amount is positive, this value will not be taken into account and will be entered as NULL in the database
-     * @return error codes: 0 is okay, 2 means that something was left blank (if amount > 0, "need" will not be parsed, but it must be filled), 3 means that something other than 0 or 1 was put into "need"
-     */
-    public int insertTransaction(double amount, String memo, int need) {
-        /* -- Sanity checks -- */
-        if (memo.isBlank() || amount == 0) { //If memo or date has no meaningful characters (not counting whitespace), or amount is zero
-            return 2;
-        } else if (amount < 0 && !(need == 0 || need == 1)) { // If amount is negative (this is an expense) and need is not 0 or 1
-            return 3;
-        }
-        /* -- End sanity checks -- */
-
-        String insertString = "INSERT INTO transactions(date,memo,amount,need) VALUES (date('now'),'" + memo + "'," + amount + "," + need + ")"; //Forms the table insert statement
-        try {
-            PreparedStatement stmt = dbcon.prepareStatement(insertString); //Formats the statement from the string
-            stmt.execute(); //Runs the statement
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return 0;
-    }
-
-    /**
-     * Removes the transaction of a particular ID number.
+     * Mutator; Removes the transaction of a particular ID number.
      * @param id the ID number of the entry to remove from the database. Note that ID numbers may not line up perfectly with the row number, since previously deleted entries are not backfilled
      * @return 0 if entry was deleted successfully, otherwise returns -1 if there was an error (either database is read-only or doesn't exist somehow)
      */
     public int removeTransaction(int id) {
         try {
+            dbcon = DriverManager.getConnection(dbPath);
+
             PreparedStatement stmt = dbcon.prepareStatement("DELETE FROM transactions WHERE id=" + id);
             stmt.execute();
+
+            dbcon.close();
         } catch (SQLException e) {
             e.printStackTrace();
             return -1;
@@ -173,7 +161,7 @@ public class database {
     }
 
     /**
-     * Provides an HTML table representation of the database
+     * Accessor; Provides an HTML table representation of the database
      * @return HTML table String
      */
     public String getTransactions() {
@@ -191,6 +179,8 @@ public class database {
 
         /* Append database entries as HTML table rows */
         try {
+            dbcon = DriverManager.getConnection(dbPath);
+
             PreparedStatement stmt = dbcon.prepareStatement("SELECT id,date,amount,need,memo FROM transactions");
             rs = stmt.executeQuery();
 
@@ -206,40 +196,13 @@ public class database {
 
                 output = output.concat("<tr><td>" + rs.getString("id") + "</td><td>" + rs.getString("date") + "</td><td>" + rs.getString("amount") + "</td><td>" + need + "</td><td>" + rs.getString("memo") + "</td></tr>");
             }
+
+            dbcon.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         output = output.concat("</table></body></html>");
-
-        return output;
-    }
-
-    /**
-     * Get HTML formatted row of the last entry in the database (used for appending to the content pane)
-     * @return HTML formatted database row
-     */
-    public String getLastTransaction() {
-        String output = "";
-        ResultSet rs;
-
-        try {
-            PreparedStatement stmt = dbcon.prepareStatement("SELECT id,date,amount,need,memo FROM transactions WHERE id=(SELECT MAX(id) FROM transactions)");
-            rs = stmt.executeQuery();
-
-            String need = "unknown";
-
-            // Classifies need/want
-            if (rs.getInt("need") == 1) {
-                need = "need";
-            } else if (rs.getInt("need") == 0) {
-                need = "want";
-            }
-
-            output = "<tr><td>" + rs.getString("id") + "</td><td>" + rs.getString("date") + "</td><td>" + rs.getString("amount") + "</td><td>" + need + "</td><td>" + rs.getString("memo") + "</td></tr>";
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
         return output;
     }
