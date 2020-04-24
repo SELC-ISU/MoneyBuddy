@@ -127,6 +127,11 @@ public class database {
         try {
             dbcon = DriverManager.getConnection(dbPath);
 
+            /* If this entry is income as opposed to an expense, set need to -1 so that it can be handled later as N/A */
+            if (amount > 0) {
+                need = -1;
+            }
+
             String insertString = "INSERT INTO transactions(date,memo,amount,need) VALUES ('" + dateObj.toString() + "','" + memo + "'," + amount + "," + need + ")"; //Forms the table insert statement
             PreparedStatement stmt = dbcon.prepareStatement(insertString); //Formats the statement from the string
 
