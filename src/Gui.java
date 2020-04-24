@@ -90,13 +90,9 @@ public class Gui extends JFrame implements ActionListener {
 
         setJMenuBar(bar);
 
-        /*
-        database db = new database("UserDB");
-        ArrayList<String> dbEntries = db.getTransactions();
-        for (int i = 0; i < dbEntries.size(); i++) {
-            this.dbEntries.setText(this.dbEntries.getText() + "<br>" + dbEntries.get(i));
-        }
-        */
+        /* Print the database in the content pane */
+        dbEntries = new JLabel(new database("UserDB").getTransactions());
+        entriesContainer.add(dbEntries); // This is automatically updated whenever AddEntry is called
 
         //button action declaration
         search.addActionListener(this::actionPerformed);
@@ -146,13 +142,16 @@ public class Gui extends JFrame implements ActionListener {
             repaint();
         }
     }
+
+
     public void AddEntry(String amount, String memo, Date date, int need) {
         database UserDB = new database("UserDB"); // Ideally in the future, we will allow users to switch between databases to manage different checkbooks. For now, we'll just have 1 database called "UserDB"
         UserDB.insertTransaction(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), Double.parseDouble(amount), memo, need); // Feeds input into the database, converting deprecated Date object into LocalDate
 
-        //TODO
-        //Add something to make the entire database to show up on the window
-        //Current problem:not making a database for my windows computer.
-        entriesContainer.add(new JLabel(UserDB.getTransactions()));
-        }
+        dbEntries.setText(UserDB.getTransactions()); // Update the content pane with the latest database
+        revalidate();
+        repaint();
+    }
+
+
 }

@@ -1,7 +1,6 @@
 import java.io.File;
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 /**
  * Represents a database instance. This is the man in between everything else and the backend database, implementing in JDBC.
@@ -182,8 +181,8 @@ public class database {
         ResultSet rs;
 
         /* Provide HTML table headers */
-        output = output.concat("<html><body>" +
-                "<table style='width:100%'><tr>" +
+        output = output.concat("<html><body><table style='width:100%'>" +
+                "<tr>" +
                 "<th>ID</th>" +
                 "<th>Date</th>" +
                 "<th>Amount</th>" +
@@ -195,7 +194,6 @@ public class database {
             PreparedStatement stmt = dbcon.prepareStatement("SELECT id,date,amount,need,memo FROM transactions");
             rs = stmt.executeQuery();
 
-            // Appends each entry to the ArrayList
             while (rs.next()) {
                 String need = "unknown";
 
@@ -213,6 +211,35 @@ public class database {
         }
 
         output = output.concat("</table></body></html>");
+
+        return output;
+    }
+
+    /**
+     * Get HTML formatted row of the last entry in the database (used for appending to the content pane)
+     * @return HTML formatted database row
+     */
+    public String getLastTransaction() {
+        String output = "";
+        ResultSet rs;
+
+        try {
+            PreparedStatement stmt = dbcon.prepareStatement("SELECT id,date,amount,need,memo FROM transactions WHERE id=(SELECT MAX(id) FROM transactions)");
+            rs = stmt.executeQuery();
+
+            String need = "unknown";
+
+            // Classifies need/want
+            if (rs.getInt("need") == 1) {
+                need = "need";
+            } else if (rs.getInt("need") == 0) {
+                need = "want";
+            }
+
+            output = "<tr><td>" + rs.getString("id") + "</td><td>" + rs.getString("date") + "</td><td>" + rs.getString("amount") + "</td><td>" + need + "</td><td>" + rs.getString("memo") + "</td></tr>";
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         return output;
     }
