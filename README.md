@@ -10,5 +10,6 @@ This program was designed to work straight out of the box, handling all the back
 # To do
  - Database: reverse order to display most recent entries at the top
  - Database: display statistics based on needs/wants and total account balance
+ - Database: if the entry is an income, insert "N/A" under need/want column
  - GUI: add functionality to switch databases under the "File" tab
  - GUI: add functionality to remove database entries under the "Edit" tab
