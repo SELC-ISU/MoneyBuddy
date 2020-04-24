@@ -1,6 +1,7 @@
 import java.io.File;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 /**
  * Represents a database instance. This is the man in between everything else and the backend database, implementing in JDBC.
@@ -165,19 +166,10 @@ public class database {
      * @return HTML table String
      */
     public String getTransactions() {
-        String output = "";
         ResultSet rs;
 
-        /* Provide HTML table headers */
-        output = output.concat("<html><body><table style='width:100%'>" +
-                "<tr>" +
-                "<th>ID</th>" +
-                "<th>Date</th>" +
-                "<th>Amount</th>" +
-                "<th>Necessity</th>" +
-                "<th>Memo</th></tr>");
-
         /* Append database entries as HTML table rows */
+        ArrayList<String> entries = new ArrayList<>(); // Used for sorting
         try {
             dbcon = DriverManager.getConnection(dbPath);
 
@@ -188,13 +180,15 @@ public class database {
                 String need = "unknown";
 
                 // Classifies need/want
-                if (rs.getInt("need") == 1) {
+                if (rs.getInt("need") == -1) {
+                    need = "N/A";
+                } else if (rs.getInt("need") == 1) {
                     need = "need";
                 } else if (rs.getInt("need") == 0) {
                     need = "want";
                 }
 
-                output = output.concat("<tr><td>" + rs.getString("id") + "</td><td>" + rs.getString("date") + "</td><td>" + rs.getString("amount") + "</td><td>" + need + "</td><td>" + rs.getString("memo") + "</td></tr>");
+                entries.add("<tr><td>" + rs.getString("id") + "</td><td>" + rs.getString("date") + "</td><td>" + rs.getString("amount") + "</td><td>" + need + "</td><td>" + rs.getString("memo") + "</td></tr>");
             }
 
             dbcon.close();
@@ -202,6 +196,22 @@ public class database {
             e.printStackTrace();
         }
 
+        /* Provides HTML headers */
+        String output = "";
+        output = output.concat("<html><body><table style='width:100%'>" +
+                "<tr>" +
+                "<th>ID</th>" +
+                "<th>Date</th>" +
+                "<th>Amount</th>" +
+                "<th>Necessity</th>" +
+                "<th>Memo</th></tr>");
+
+        /* Adds entries to the table in reverse order so that latest entries are at the top */
+        for (int i = entries.size() - 1; i >= 0; i--) {
+            output = output.concat(entries.get(i));
+        }
+
+        /* Provides HTML footers */
         output = output.concat("</table></body></html>");
 
         return output;
