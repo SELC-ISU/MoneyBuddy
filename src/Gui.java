@@ -15,7 +15,6 @@ import javax.swing.*;
 
 public class Gui extends JFrame implements ActionListener {
     private int need;
-    private ArrayList<JLabel> entries = new ArrayList<JLabel>();
     private JLabel item1, item2, item3;
     private JButton button;
     private JMenuBar bar;
@@ -23,6 +22,7 @@ public class Gui extends JFrame implements ActionListener {
     private JMenuItem newItem, edit,close, extra,search;
     private Container amount,  memo, date, check, entriesContainer;
     private JTextField field, field2;
+    private JLabel dbEntries;
     private SpinnerModel model;
     private JSpinner spinner;
     private JFormattedTextField ftf;
@@ -56,6 +56,7 @@ public class Gui extends JFrame implements ActionListener {
         search = new JMenuItem("Search");
         field = new JTextField(10);
         field2 = new JTextField(10);
+        dbEntries = new JLabel();
         checkbox = new JCheckBox("Need?");
         //declaring for dates
         Calendar calendar = Calendar.getInstance();
@@ -88,6 +89,14 @@ public class Gui extends JFrame implements ActionListener {
         check.add(checkbox);
 
         setJMenuBar(bar);
+
+        /*
+        database db = new database("UserDB");
+        ArrayList<String> dbEntries = db.getTransactions();
+        for (int i = 0; i < dbEntries.size(); i++) {
+            this.dbEntries.setText(this.dbEntries.getText() + "<br>" + dbEntries.get(i));
+        }
+        */
 
         //button action declaration
         search.addActionListener(this::actionPerformed);
@@ -144,11 +153,6 @@ public class Gui extends JFrame implements ActionListener {
         //TODO
         //Add something to make the entire database to show up on the window
         //Current problem:not making a database for my windows computer.
-        JLabel temp = new JLabel((String) UserDB.getTransactions().get(0));
-        System.out.println((String) UserDB.getTransactions().get(0)); //works but with no values
-        entries.add(temp);//works
-        entriesContainer.add(entries.get(0));//Works
-
-    }
-
+        entriesContainer.add(new JLabel(UserDB.getTransactions()));
+        }
 }

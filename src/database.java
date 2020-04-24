@@ -174,16 +174,23 @@ public class database {
     }
 
     /**
-     * Provides an ASCII-table formatted ArrayList of all the contents in the database
-     * @return ArrayList of formatted database entries, starting with a header and a divider
+     * Provides an HTML table representation of the database
+     * @return HTML table String
      */
-    public ArrayList getTransactions() {
-        ArrayList<String> out = new ArrayList<String>();
+    public String getTransactions() {
+        String output = "";
         ResultSet rs;
 
-        out.add("ID\t|\tDate\t\t|\tAmount\t|\tNecessity\t|\tMemo"); // Prepends header
-        out.add("-------------------------------------------------------------------"); // Adds divider
+        /* Provide HTML table headers */
+        output = output.concat("<html><body>" +
+                "<table style='width:100%'><tr>" +
+                "<th>ID</th>" +
+                "<th>Date</th>" +
+                "<th>Amount</th>" +
+                "<th>Necessity</th>" +
+                "<th>Memo</th></tr>");
 
+        /* Append database entries as HTML table rows */
         try {
             PreparedStatement stmt = dbcon.prepareStatement("SELECT id,date,amount,need,memo FROM transactions");
             rs = stmt.executeQuery();
@@ -199,13 +206,14 @@ public class database {
                     need = "want";
                 }
 
-                // Appends to ArrayList
-                out.add(rs.getString("id") + "\t|\t" + rs.getString("date") + "\t|\t" + rs.getString("amount") + "\t|\t" + need + "\t\t|\t" + rs.getString("memo"));
+                output = output.concat("<tr><td>" + rs.getString("id") + "</td><td>" + rs.getString("date") + "</td><td>" + rs.getString("amount") + "</td><td>" + need + "</td><td>" + rs.getString("memo") + "</td></tr>");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return out;
+        output = output.concat("</table></body></html>");
+
+        return output;
     }
 }
