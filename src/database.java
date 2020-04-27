@@ -100,7 +100,7 @@ public class database {
     }
 
     /**
-     * Accessor; Returns the running balance of the current active transactions database
+     * Accessor; Returns the running balance of the current active transactions database rounded to 2 decimal places
      * @return the sum of all transactions (double), which should be the running account balance
      */
     public double getBal() {
@@ -115,7 +115,7 @@ public class database {
 
             dbcon.close();
 
-            return sum;
+            return Math.round(sum * 100.0) / 100.0;
 
         } catch (SQLException e) {
             e.printStackTrace();

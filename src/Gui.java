@@ -21,6 +21,7 @@ public class Gui extends JFrame implements ActionListener {
     private Container amount,  memo, date, check, entriesContainer;
     private JTextField field, field2;
     private JLabel dbEntries;
+    private JLabel curBal;
     private SpinnerModel model;
     private JSpinner spinner;
     private JFormattedTextField ftf;
@@ -85,8 +86,20 @@ public class Gui extends JFrame implements ActionListener {
         memo.add(button);
         date.add(spinner);
         check.add(checkbox);
+        setResizable(false); // Let's keep things simple
 
         setJMenuBar(bar);
+
+        /* Sets up the divider to print the balance behind */
+        JSeparator balSeparator = new JSeparator(SwingConstants.VERTICAL);
+        Dimension balSeparatorDimensions = balSeparator.getPreferredSize();
+        balSeparatorDimensions.height = 50;
+        balSeparator.setPreferredSize(balSeparatorDimensions);
+        entriesContainer.add(balSeparator);
+
+        /* Prints the balance in the header */
+        curBal = new JLabel("Balance: $" + new database("UserDB").getBal()); // Prepares the balance entry
+        entriesContainer.add(curBal); // Prints the balance
 
         /* Print the database in the content pane */
         dbEntries = new JLabel(new database("UserDB").getTransactions());
@@ -147,6 +160,7 @@ public class Gui extends JFrame implements ActionListener {
         UserDB.insertTransaction(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), Double.parseDouble(amount), memo, need); // Feeds input into the database, converting deprecated Date object into LocalDate
 
         dbEntries.setText(UserDB.getTransactions()); // Update the content pane with the latest database
+        curBal.setText("Balance: $" + new database("UserDB").getBal()); // Update the content pane with the latest balance
         revalidate();
         repaint();
     }
