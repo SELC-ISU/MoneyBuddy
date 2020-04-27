@@ -201,7 +201,7 @@ public class database {
                     need = "want";
                 }
 
-                entries.add("<tr><td>" + rs.getString("id") + "</td><td>" + rs.getString("date") + "</td><td>" + rs.getString("amount") + "</td><td>" + need + "</td><td>" + rs.getString("memo") + "</td></tr>");
+                entries.add("<tr><td>" + rs.getString("id") + "</td><td>" + rs.getString("date") + "</td><td>$" + rs.getString("amount") + "</td><td>" + need + "</td><td>" + rs.getString("memo") + "</td></tr>");
             }
 
             dbcon.close();
@@ -213,11 +213,11 @@ public class database {
         String output = "";
         output = output.concat("<html><body><table style='width:100%'>" +
                 "<tr>" +
-                "<th>ID</th>" +
-                "<th>Date</th>" +
-                "<th>Amount</th>" +
-                "<th>Necessity</th>" +
-                "<th>Memo</th></tr>");
+                "<th>~~~ID~~~</th>" +
+                "<th>~~~Date~~~</th>" +
+                "<th>~~~Amount~~~</th>" +
+                "<th>~~~Necessity~~~</th>" +
+                "<th>~~~Memo~~~</th></tr>");
 
         /* Adds entries to the table in reverse order so that latest entries are at the top */
         for (int i = entries.size() - 1; i >= 0; i--) {

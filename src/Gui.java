@@ -29,6 +29,7 @@ public class Gui extends JFrame implements ActionListener {
     private Date dateInput;
     private ArrayList<JLabel> label;
     private JCheckBox checkbox;
+    private database currentDatabase;
 
     public Gui(){
         //Declaring Panes
@@ -90,6 +91,8 @@ public class Gui extends JFrame implements ActionListener {
 
         setJMenuBar(bar);
 
+        currentDatabase = new database("default"); // Defines the current database. This should be changeable from the "File" tab with help from dbList() in helpers.java
+
         /* Sets up the divider to print the balance behind */
         JSeparator balSeparator = new JSeparator(SwingConstants.VERTICAL);
         Dimension balSeparatorDimensions = balSeparator.getPreferredSize();
@@ -98,11 +101,11 @@ public class Gui extends JFrame implements ActionListener {
         entriesContainer.add(balSeparator);
 
         /* Prints the balance in the header */
-        curBal = new JLabel("Balance: $" + new database("UserDB").getBal()); // Prepares the balance entry
+        curBal = new JLabel("Balance: $" + currentDatabase.getBal()); // Prepares the balance entry
         entriesContainer.add(curBal); // This is automatically updated whenever AddEntry is called
 
         /* Print the database in the content pane */
-        dbEntries = new JLabel(new database("UserDB").getTransactions()); // Prepares the database display
+        dbEntries = new JLabel(currentDatabase.getTransactions()); // Prepares the database display
         entriesContainer.add(dbEntries); // This is automatically updated whenever AddEntry is called
 
         //button action declaration
@@ -162,11 +165,10 @@ public class Gui extends JFrame implements ActionListener {
      * @param need Whether the transaction was a "need" (need=1) or a "want" (need=0). If the transaction amount is positive, this value is ignored
      */
     public void AddEntry(String amount, String memo, Date date, int need) {
-        database UserDB = new database("UserDB"); // Ideally in the future, we will allow users to switch between databases to manage different checkbooks. For now, we'll just have 1 database called "UserDB"
-        UserDB.insertTransaction(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), Double.parseDouble(amount), memo, need); // Feeds input into the database, converting deprecated Date object into LocalDate
+        currentDatabase.insertTransaction(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), Double.parseDouble(amount), memo, need); // Feeds input into the database, converting deprecated Date object into LocalDate
 
-        dbEntries.setText(UserDB.getTransactions()); // Update the content pane with the latest database
-        curBal.setText("Balance: $" + new database("UserDB").getBal()); // Update the content pane with the latest balance
+        dbEntries.setText(currentDatabase.getTransactions()); // Update the content pane with the latest database
+        curBal.setText("Balance: $" + currentDatabase.getBal()); // Update the content pane with the latest balance
         revalidate();
         repaint();
     }
