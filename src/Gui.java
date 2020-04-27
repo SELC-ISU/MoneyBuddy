@@ -99,10 +99,10 @@ public class Gui extends JFrame implements ActionListener {
 
         /* Prints the balance in the header */
         curBal = new JLabel("Balance: $" + new database("UserDB").getBal()); // Prepares the balance entry
-        entriesContainer.add(curBal); // Prints the balance
+        entriesContainer.add(curBal); // This is automatically updated whenever AddEntry is called
 
         /* Print the database in the content pane */
-        dbEntries = new JLabel(new database("UserDB").getTransactions());
+        dbEntries = new JLabel(new database("UserDB").getTransactions()); // Prepares the database display
         entriesContainer.add(dbEntries); // This is automatically updated whenever AddEntry is called
 
         //button action declaration
@@ -154,7 +154,13 @@ public class Gui extends JFrame implements ActionListener {
         }
     }
 
-
+    /**
+     * Inserts a transaction into the database
+     * @param amount The amount of the transactions: if an expense, this should be negative
+     * @param memo The memo to associate with the transaction; this should be a string describing the transaction
+     * @param date The date the transaction took place
+     * @param need Whether the transaction was a "need" (need=1) or a "want" (need=0). If the transaction amount is positive, this value is ignored
+     */
     public void AddEntry(String amount, String memo, Date date, int need) {
         database UserDB = new database("UserDB"); // Ideally in the future, we will allow users to switch between databases to manage different checkbooks. For now, we'll just have 1 database called "UserDB"
         UserDB.insertTransaction(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), Double.parseDouble(amount), memo, need); // Feeds input into the database, converting deprecated Date object into LocalDate
