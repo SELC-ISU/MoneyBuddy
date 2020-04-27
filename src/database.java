@@ -106,12 +106,20 @@ public class database {
     public double getBal() {
         ResultSet rs = null;
         try {
+            dbcon = DriverManager.getConnection(dbPath);
+
             PreparedStatement stmt = dbcon.prepareStatement("SELECT sum(amount) FROM transactions");
             rs = stmt.executeQuery();
-            return rs.getDouble(1);
+
+            double sum = rs.getDouble(1);
+
+            dbcon.close();
+
+            return sum;
+
         } catch (SQLException e) {
             e.printStackTrace();
-            return 0;
+            return -1;
         }
     }
 
@@ -220,5 +228,70 @@ public class database {
         output = output.concat("</table></body></html>");
 
         return output;
+    }
+
+    /**
+     * Returns an HTML table for related statistics from the current database
+     * @return an HTML table for related statistics from the current database
+     */
+    public String getStatistics() {
+        ResultSet rs;
+        String returnStringHTML = "";
+        double percNeed = 0;
+        double percWant = 0;
+        double currentBalance = this.getBal();
+        double spentThisMonth = 0;
+        double earnedThisMonth = 0;
+
+        /* Retrieve results from the database */
+        try {
+            dbcon = DriverManager.getConnection(dbPath);
+
+            PreparedStatement stmt = dbcon.prepareStatement("SELECT id,date,amount,need,memo FROM transactions WHERE date BETWEEN datetime('now', 'start of month') AND datetime('now', 'localtime')");
+            rs = stmt.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Unknown error connecting to the database.";
+        }
+
+        /* Parses statistics */
+        try {
+            int totalNeeds = 0;
+            int totalWants = 0;
+
+            while (rs.next()) {
+                if (rs.getInt("need") == 1) {
+                    totalNeeds++;
+                } else if (rs.getInt("need") == 0) {
+                    totalWants++;
+                }
+
+                if (rs.getInt("need") != -1) { // If this was an expense
+                    spentThisMonth += Math.abs(rs.getDouble("amount")); // Assumed negative
+                } else {
+                    earnedThisMonth += rs.getDouble("amount"); // Assumed positive
+                }
+            }
+
+            percNeed = ((double) totalNeeds / (totalNeeds + totalWants)) * 100;
+            percWant = ((double) totalWants / (totalNeeds + totalWants)) * 100;
+
+            dbcon.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Unknown error parsing the database results.";
+        }
+
+        /* Format statistics into HTML. I rounded everything to 2 decimal places */
+        returnStringHTML = returnStringHTML.concat(
+                "<html><body><h1>Month-to-date statistics</h1><br><p>" + // Header
+                "<b>Current Balance</b>: " + Math.round(currentBalance * 100.0) / 100.0 + "<br>" +
+                "<b>Spent this month</b>: " + Math.round(spentThisMonth * 100.0) / 100.0 + "<br>" +
+                "<b>Earned this month</b>: " + Math.round(earnedThisMonth * 100.0) / 100.0 + "<br><br>" +
+                "<b>Percentage of Needs</b>: " + Math.round(percNeed * 100.0) / 100.0 + "%<br>" +
+                "<b>Percentage of Wants</b>: " + Math.round(percWant * 100.0) / 100.0 + "%<br>" +
+                "</p></body></html>"); // Footer
+
+        return returnStringHTML;
     }
 }
