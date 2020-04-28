@@ -105,6 +105,7 @@ public class Gui extends JFrame implements ActionListener {
 
         /* Print the database in a JScrollPane */
         dbEntries = new JLabel(currentDatabase.getTransactions()); // This is the the label that is kept updated
+        dbEntries.setVerticalAlignment(JLabel.TOP);
         dbEntriesPane = new JScrollPane(dbEntries,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); // This is the container that provides the scrolling functionality
         dbEntriesPane.setPreferredSize(new Dimension(700, 425)); // This tells the scrolling box how big it should be
         entriesContainer.add(dbEntriesPane); // This adds the container to the content window
