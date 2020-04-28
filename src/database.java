@@ -13,8 +13,6 @@ public class database {
     private String dirPath;
     private PreparedStatement statement;
     private Connection dbcon;
-    static final String USER = "moneybuddy";
-    static final String PASS = "moneybuddy";
 
     /**
      * Constructor; Builds a new database object
