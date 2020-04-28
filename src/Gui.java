@@ -13,7 +13,7 @@ import javax.swing.*;
 
 public class Gui extends JFrame implements ActionListener {
     private int need;
-    private JLabel item1, item2, item3;
+    private JLabel item1, item2;
     private JButton button;
     private JMenuBar bar;
     private JMenu file, help;
@@ -25,10 +25,8 @@ public class Gui extends JFrame implements ActionListener {
     private JLabel curBal;
     private SpinnerModel model;
     private JSpinner spinner;
-    private JFormattedTextField ftf;
     private String amountInput,  memoInput;
     private Date dateInput;
-    private ArrayList<JLabel> label;
     private JCheckBox checkbox;
     private database currentDatabase;
 
