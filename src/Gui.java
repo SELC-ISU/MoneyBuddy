@@ -21,6 +21,7 @@ public class Gui extends JFrame implements ActionListener {
     private Container amount,  memo, date, check, entriesContainer;
     private JTextField field, field2;
     private JLabel dbEntries;
+    private JScrollPane dbEntriesPane;
     private JLabel curBal;
     private SpinnerModel model;
     private JSpinner spinner;
@@ -56,7 +57,6 @@ public class Gui extends JFrame implements ActionListener {
         search = new JMenuItem("Search");
         field = new JTextField(10);
         field2 = new JTextField(10);
-        dbEntries = new JLabel();
         checkbox = new JCheckBox("Need?");
         //declaring for dates
         Calendar calendar = Calendar.getInstance();
@@ -104,9 +104,11 @@ public class Gui extends JFrame implements ActionListener {
         curBal = new JLabel("Balance: $" + currentDatabase.getBal()); // Prepares the balance entry
         entriesContainer.add(curBal); // This is automatically updated whenever AddEntry is called
 
-        /* Print the database in the content pane */
-        dbEntries = new JLabel(currentDatabase.getTransactions()); // Prepares the database display
-        entriesContainer.add(dbEntries); // This is automatically updated whenever AddEntry is called
+        /* Print the database in a JScrollPane */
+        dbEntries = new JLabel(currentDatabase.getTransactions());
+        dbEntriesPane = new JScrollPane(dbEntries,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        dbEntriesPane.setPreferredSize(new Dimension(700, 425));
+        entriesContainer.add(dbEntriesPane); // This is automatically updated whenever AddEntry is called
 
         //button action declaration
         search.addActionListener(this::actionPerformed);
