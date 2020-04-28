@@ -1,11 +1,11 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.*;
@@ -16,8 +16,8 @@ public class Gui extends JFrame implements ActionListener {
     private JLabel item1, item2;
     private JButton button;
     private JMenuBar bar;
-    private JMenu file, help;
-    private JMenuItem newItem, edit,close, extra,search;
+    private JMenu file, help, checkbooks;
+    private JMenuItem edit, close, github, newCheckbook, rmCheckbook;
     private Container amount,  memo, date, check, entriesContainer;
     private JTextField field, field2;
     private JLabel dbEntries;
@@ -48,14 +48,15 @@ public class Gui extends JFrame implements ActionListener {
         bar = new JMenuBar();
         file = new JMenu("File");
         help = new JMenu("Help");
-        newItem = new JMenuItem("View Entries");
-        edit = new JMenuItem("Edit Entries");
-        close = new JMenuItem("Close");
-        extra = new JMenu("Extra");
-        search = new JMenuItem("Search");
+        edit = new JMenuItem("Remove entry");
+        close = new JMenuItem("Exit");
+        checkbooks = new JMenu("Checkbooks");
+        github = new JMenuItem("Github");
         field = new JTextField(10);
         field2 = new JTextField(10);
         checkbox = new JCheckBox("Need?");
+        newCheckbook = new JMenuItem("New checkbook");
+        rmCheckbook = new JMenuItem("Delete checkbook");
         //declaring for dates
         Calendar calendar = Calendar.getInstance();
         Date initDate = calendar.getTime();
@@ -69,12 +70,12 @@ public class Gui extends JFrame implements ActionListener {
         spinner.setEditor(new JSpinner.DateEditor(spinner,"yyyy-MM-dd"));
         //declaration of the header menu (forgetting the name of it)
         bar.add(file);
-        file.add(newItem);
         file.add(edit);
         file.addSeparator();
+        file.add(checkbooks);
+        refreshCheckbooks();
         file.add(close);
-        file.add(extra);
-        help.add(search);
+        help.add(github);
         bar.add(help);
         //Adding certain objects to certain panes
         add(item1);
@@ -109,51 +110,81 @@ public class Gui extends JFrame implements ActionListener {
         entriesContainer.add(dbEntriesPane); // This adds the container to the content window
 
         //button action declaration
-        search.addActionListener(this::actionPerformed);
+        github.addActionListener(this);
         button.addActionListener(this);
         field.addActionListener(this);
+        close.addActionListener(this);
+        newCheckbook.addActionListener(this);
+        rmCheckbook.addActionListener(this);
+        edit.addActionListener(this);
     }
     @Override
-    public void actionPerformed(ActionEvent e){
-        String name = e.getActionCommand();
-        //Search fuction in the help tab
-        if(name.equals("Search")) {
-            URI uri = null;
-            try {
-                uri = new URI("https://github.com/SELC-ISU/MoneyBuddy/blob/master/README.md");
-            } catch (URISyntaxException ex) {
-                ex.printStackTrace();
-            }
-            try {
-                Desktop.getDesktop().browse(uri);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        //Submit button action
-        else if (name.equals("Submit")){
+    public void actionPerformed(ActionEvent event){
+        String name = event.getActionCommand();
+        String[] dbList = helpers.dbList(); // Used for the checkbooks buttons
 
-        }
-        System.out.println("Hehe just pressed a button xD");
-        amountInput = field.getText();
-        memoInput = field2.getText();
-        if (!(amountInput.equals("")) || !(memoInput.equals(""))){
-            System.out.println(amountInput + " is what is in the amount text box.");
-            field.setText("");
-            System.out.println(memoInput + " is what is in the memo text box");
-            field2.setText("");
-            dateInput = (Date)spinner.getValue();
-            System.out.println(dateInput);
-            if(checkbox.isSelected()){
-                need = 1;
-                checkbox.setSelected(false);
-            } else {
-                need = 0;
+        if(name.equals("Github")) {
+            try {
+                Desktop.getDesktop().browse(new URI("https://github.com/SELC-ISU/MoneyBuddy/blob/master/README.md"));
+            } catch (IOException | URISyntaxException err) {
+                err.printStackTrace();
             }
-            System.out.println(need);
-            AddEntry(amountInput,  memoInput, dateInput, need);
-            revalidate();
-            repaint();
+        } else if (name.equals("Exit")) {
+            this.dispose();
+        } else if (name.equals("Submit")) {
+            amountInput = field.getText();
+            memoInput = field2.getText();
+
+            if (!amountInput.equals("") && !memoInput.equals("")) { // We were going to use .isBlank(), but turns out that's literally a Java 11 function and we otherwise have Java 8 compatibility
+                System.out.println(amountInput + " is what is in the amount text box.");
+                field.setText("");
+                System.out.println(memoInput + " is what is in the memo text box");
+                field2.setText("");
+                dateInput = (Date)spinner.getValue();
+                System.out.println(dateInput);
+                if(checkbox.isSelected()){
+                    need = 1;
+                    checkbox.setSelected(false);
+                } else {
+                    need = 0;
+                }
+                System.out.println(need);
+                AddEntry(amountInput,  memoInput, dateInput, need);
+            }
+        } else if (helpers.doesArrayContain(dbList, name)) { // If this is a checkbook (if the name of the button matches any from the list of databases)
+            currentDatabase = new database(name); // Reestablish the current database
+            refreshDataframe();
+        } else if (name.equals("New checkbook")) {
+            String nameOfNewDatabase = JOptionPane.showInputDialog(this, "What do you want to name this new database?", null);
+            if (nameOfNewDatabase != null && !nameOfNewDatabase.equals("")) {
+                currentDatabase = new database(nameOfNewDatabase);
+                refreshDataframe();
+                refreshCheckbooks();
+            }
+        } else if (name.equals("Remove entry")) {
+            String entryToRemoveString = JOptionPane.showInputDialog(this, "What is the ID number of the entry you want to remove?", null);
+
+            if (entryToRemoveString != null && !entryToRemoveString.equals("")) {
+                int entryToRemoveInt = Integer.parseInt(entryToRemoveString);
+                currentDatabase.removeTransaction(entryToRemoveInt);
+                refreshDataframe();
+            }
+        } else if (name.equals("Delete checkbook")) {
+            String checkbookToRemove = JOptionPane.showInputDialog(this, "What is the exact name of the checkbook you wish to remove? (CASE SENSITIVE)", null);
+
+            if (checkbookToRemove != null && !checkbookToRemove.equals("")) {
+                int areYouSureAboutThat = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete \"" + checkbookToRemove + "\"? This is a permanent action and cannot be undone!", "Delete?",  JOptionPane.YES_NO_OPTION);
+
+                if (areYouSureAboutThat == JOptionPane.YES_OPTION) {
+                    File f = new File(System.getProperty("user.home") + "/.MoneyBuddy/" + checkbookToRemove + ".db");
+                    f.delete();
+                    refreshCheckbooks();
+                    System.out.println("Checkbook deleted");
+                }
+            }
+        }
+        else {
+            System.out.println("Button was pressed, but no function was assigned.");
         }
     }
 
@@ -167,11 +198,34 @@ public class Gui extends JFrame implements ActionListener {
     public void AddEntry(String amount, String memo, Date date, int need) {
         currentDatabase.insertTransaction(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), Double.parseDouble(amount), memo, need); // Feeds input into the database, converting deprecated Date object into LocalDate
 
+        refreshDataframe();
+    }
+
+    /**
+     * Just a handy little macro that refreshes the database and balance display
+     */
+    public void refreshDataframe() {
         dbEntries.setText(currentDatabase.getTransactions()); // Update the content pane with the latest database
         curBal.setText("Balance: $" + currentDatabase.getBal()); // Update the content pane with the latest balance
         revalidate();
         repaint();
     }
 
+    /**
+     * Another handy function to refresh the JMenu checkbooks to show all active databases
+     */
+    public void refreshCheckbooks() {
+        checkbooks.removeAll();
 
+        checkbooks.add(newCheckbook);
+        checkbooks.add(rmCheckbook);
+        checkbooks.addSeparator();
+
+        String[] dbList = helpers.dbList();
+        for (int i = 0; i < dbList.length; i++) {
+            JMenuItem checkbook = new JMenuItem(dbList[i]);
+            checkbooks.add(checkbook);
+            checkbook.addActionListener(this);
+        }
+    }
 }

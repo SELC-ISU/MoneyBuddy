@@ -1,5 +1,4 @@
 import java.io.File;
-import java.io.FileNotFoundException;
 
 /**
  *  Feel free to throw some bloat-code in here if you want to clean up your functions
@@ -21,5 +20,21 @@ public class helpers {
        }
 
         return filenames;
+    }
+
+    /**
+     * Returns true/false based on whether or not there are any occurrences of String 'comparator' in the String[] inputArr
+     * @param inputArr the array to check against
+     * @param comparator the String to seek in the array
+     * @return boolean whether or not the comparator exists in the array
+     */
+    public static boolean doesArrayContain(String[] inputArr, String comparator) {
+        for (int i = 0; i < inputArr.length; i++) {
+            if (inputArr[i].equals(comparator)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
