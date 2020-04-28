@@ -9,5 +9,3 @@ This program was designed to work straight out of the box, handling all the back
 
 # To do
  - GUI: add functionality to display database statistics with database.getStatistics()
- - GUI: add functionality to switch databases with help from dbList() under the "File" tab
- - GUI: add functionality to remove database entries with database.removeTransaction() under the "File" tab
