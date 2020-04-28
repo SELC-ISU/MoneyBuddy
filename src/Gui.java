@@ -103,10 +103,10 @@ public class Gui extends JFrame implements ActionListener {
         entriesContainer.add(curBal); // This is automatically updated whenever AddEntry is called
 
         /* Print the database in a JScrollPane */
-        dbEntries = new JLabel(currentDatabase.getTransactions());
-        dbEntriesPane = new JScrollPane(dbEntries,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        dbEntriesPane.setPreferredSize(new Dimension(700, 425));
-        entriesContainer.add(dbEntriesPane); // This is automatically updated whenever AddEntry is called
+        dbEntries = new JLabel(currentDatabase.getTransactions()); // This is the the label that is kept updated
+        dbEntriesPane = new JScrollPane(dbEntries,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); // This is the container that provides the scrolling functionality
+        dbEntriesPane.setPreferredSize(new Dimension(700, 425)); // This tells the scrolling box how big it should be
+        entriesContainer.add(dbEntriesPane); // This adds the container to the content window
 
         //button action declaration
         search.addActionListener(this::actionPerformed);
