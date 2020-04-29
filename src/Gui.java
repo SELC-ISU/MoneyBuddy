@@ -144,7 +144,7 @@ public class Gui extends JFrame implements ActionListener {
             try {
                 Double.parseDouble(amountInput);
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog( null, "<html><body><p>Whoops! You can't have characters in the \"Amount\" field!</p></body></html>" , "Uh oh!", JOptionPane.ERROR_MESSAGE);
+                alert("Whoops! You can't have characters in the \"Amount\" field!" , JOptionPane.ERROR_MESSAGE);
                 return;
            }
 
@@ -175,28 +175,50 @@ public class Gui extends JFrame implements ActionListener {
                 refreshCheckbooks();
             }
         } else if (name.equals("Remove entry")) {
-            String entryToRemoveString = JOptionPane.showInputDialog(this, "What is the ID number of the entry you want to remove?", null);
+            String entryToRemoveString = JOptionPane.showInputDialog(this, "What is the ID number of the entry you want to remove?", "Remove entry", JOptionPane.ERROR_MESSAGE);
 
-            if (entryToRemoveString != null && !entryToRemoveString.equals("")) {
+            if (entryToRemoveString == null) { // Only occurs if action is cancelled
+                return;
+            }
+
+            if (!entryToRemoveString.equals("")) {
+                /* Sanity checks */
+                try {
+                    Double.parseDouble(entryToRemoveString); // Is it a number?
+                } catch (NumberFormatException e) {
+                    alert("Whoops! You can't have characters in that field!" , JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 int entryToRemoveInt = Integer.parseInt(entryToRemoveString);
                 currentDatabase.removeTransaction(entryToRemoveInt);
                 refreshDataframe();
+            } else {
+                alert("Whoops! You can't leave that field blank!", JOptionPane.ERROR_MESSAGE);
             }
         } else if (name.equals("Delete checkbook")) {
-            String checkbookToRemove = JOptionPane.showInputDialog(this, "What is the exact name of the checkbook you wish to remove? (CASE SENSITIVE)", null);
+            String checkbookToRemove = JOptionPane.showInputDialog(this, "What is the exact name of the checkbook you wish to remove? (CASE SENSITIVE)", "Remove checkbook", JOptionPane.ERROR_MESSAGE);
 
-            if (checkbookToRemove != null && !checkbookToRemove.equals("")) {
+            if (checkbookToRemove == null) { // Only occurs if action is cancelled
+                return;
+            }
+
+            if (!checkbookToRemove.equals("")) {
                 int areYouSureAboutThat = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete \"" + checkbookToRemove + "\"? This is a permanent action and cannot be undone!", "Delete?",  JOptionPane.YES_NO_OPTION);
 
                 if (areYouSureAboutThat == JOptionPane.YES_OPTION) {
                     File f = new File(System.getProperty("user.home") + "/.MoneyBuddy/" + checkbookToRemove + ".db");
-                    f.delete();
+                    if (f.delete()) {
+                        alert("Checkbook \"" + checkbookToRemove + "\" deleted successfully.", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        alert("Checkbook \"" + checkbookToRemove + "\" does not exist.", JOptionPane.ERROR_MESSAGE);
+                    }
                     refreshCheckbooks();
-                    System.out.println("Checkbook deleted");
                 }
+            } else {
+                alert("Whoops! You can't leave that field blank!", JOptionPane.ERROR_MESSAGE);
             }
         } else if (name.equals("Statistics")){
-        //database.getStatistics()
             JOptionPane.showMessageDialog( null, currentDatabase.getStatistics() , "Stats", JOptionPane.INFORMATION_MESSAGE);
         }
         else {
@@ -243,5 +265,16 @@ public class Gui extends JFrame implements ActionListener {
             checkbooks.add(checkbook);
             checkbook.addActionListener(this);
         }
+    }
+
+    /**
+     * A quick helper to reduce the ugliness of a JOptionPane. This is not a replacement of JOptionPane popups, but it can be used for some informational popups
+     * @param alert The string for the popup box; supports HTML tags
+     * @param warningType The type of warning (should be one of the JOptionPane.(something) enumerators
+     */
+    public void alert(String alert, int warningType) {
+        String header = "<html><body><p>";
+        String footer = "</p></body></html>";
+        JOptionPane.showMessageDialog( null, header + alert + footer, "MoneyBuddy", warningType);
     }
 }
