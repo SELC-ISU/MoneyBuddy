@@ -8,4 +8,4 @@ You can either clone this repository and compile the code yourself (not recommen
 This program was designed to work straight out of the box, handling all the backend processes that come with database management. Assuming you want to keep track of a checkbook for just 1 account, you can start by entering your current balance into the "Amount" field and hitting submit. This will initialize your checkbook. Once you've done that, start entering negative values for expenses and positive values for income, just as you would with a normal paper checkbook. You can add memos (not parsed) and, if it's an expense, classify the expense as either a need or a want.
 
 # To do
- - GUI: add functionality to display database statistics with database.getStatistics()
+ - Revamp README.md to display more relevant info
