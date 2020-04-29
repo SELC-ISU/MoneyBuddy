@@ -52,7 +52,7 @@ public class Gui extends JFrame implements ActionListener {
         close = new JMenuItem("Exit");
         checkbooks = new JMenu("Checkbooks");
         github = new JMenuItem("Github");
-        stats =  new JMenuItem("Stats");
+        stats =  new JMenuItem("Statistics");
         field = new JTextField(10);
         field2 = new JTextField(10);
         checkbox = new JCheckBox("Need?");
@@ -71,8 +71,8 @@ public class Gui extends JFrame implements ActionListener {
         spinner.setEditor(new JSpinner.DateEditor(spinner,"yyyy-MM-dd"));
         //declaration of the header menu (forgetting the name of it)
         bar.add(file);
-        file.add(edit);
         file.add(stats);
+        file.add(edit);
         file.addSeparator();
         file.add(checkbooks);
         refreshCheckbooks();
