@@ -131,6 +131,7 @@ public class Gui extends JFrame implements ActionListener {
             try {
                 Desktop.getDesktop().browse(new URI("https://github.com/SELC-ISU/MoneyBuddy/blob/master/README.md"));
             } catch (IOException | URISyntaxException err) {
+                JOptionPane.showMessageDialog( null, "<html><body><p>Oh no! Something went wrong trying to take you to our Github page. I'm not so sure what happened, so here's the link:<br><a href='https://github.com/SELC-ISU/MoneyBuddy/'>https://github.com/SELC-ISU/MoneyBuddy/</a></p></body></html>" , "Uh oh!", JOptionPane.ERROR_MESSAGE);
                 err.printStackTrace();
             }
         } else if (name.equals("Exit")) {
@@ -138,6 +139,14 @@ public class Gui extends JFrame implements ActionListener {
         } else if (name.equals("Submit")) {
             amountInput = field.getText();
             memoInput = field2.getText();
+
+            /* Basic sanity check to ensure amountInput is a number */
+            try {
+                Double.parseDouble(amountInput);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog( null, "<html><body><p>Whoops! You can't have characters in the \"Amount\" field!</p></body></html>" , "Uh oh!", JOptionPane.ERROR_MESSAGE);
+                return;
+           }
 
             if (!amountInput.equals("") && !memoInput.equals("")) { // We were going to use .isBlank(), but turns out that's literally a Java 11 function and we otherwise have Java 8 compatibility
                 System.out.println(amountInput + " is what is in the amount text box.");
