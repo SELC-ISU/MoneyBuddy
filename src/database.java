@@ -265,7 +265,7 @@ public class database {
                 }
 
                 if (rs.getInt("need") != -1) { // If this was an expense
-                    spentThisMonth += Math.abs(rs.getDouble("amount")); // Assumed negative
+                    spentThisMonth += rs.getDouble("amount"); // Assumed negative
                 } else {
                     earnedThisMonth += rs.getDouble("amount"); // Assumed positive
                 }
@@ -282,13 +282,14 @@ public class database {
 
         /* Format statistics into HTML. I rounded everything to 2 decimal places */
         returnStringHTML = returnStringHTML.concat(
-                "<html><body><h1>Month-to-date statistics</h1><br><p>" + // Header
-                "<b>Current Balance</b>: " + Math.round(currentBalance * 100.0) / 100.0 + "<br>" +
-                "<b>Spent this month</b>: " + Math.round(spentThisMonth * 100.0) / 100.0 + "<br>" +
-                "<b>Earned this month</b>: " + Math.round(earnedThisMonth * 100.0) / 100.0 + "<br><br>" +
-                "<b>Percentage of Needs</b>: " + Math.round(percNeed * 100.0) / 100.0 + "%<br>" +
-                "<b>Percentage of Wants</b>: " + Math.round(percWant * 100.0) / 100.0 + "%<br>" +
-                "</p></body></html>"); // Footer
+                "<html><body><h1>Month-to-date statistics</h1><br><table>" + // Header
+                "<tr><td><b>Current Balance</b>:</td><td>$" + Math.round(currentBalance * 100.0) / 100.0 + "</td></tr>" +
+                "<tr><td><b>Spent this month</b>:</td><td>$" + Math.abs(Math.round(spentThisMonth * 100.0) / 100.0) + "</td></tr>" +
+                "<tr><td><b>Earned this month</b>:</td><td>$" + Math.round(earnedThisMonth * 100.0) / 100.0 + "</td></tr>" +
+                "<tr><td><b>Delta</b>:</td><td>$" + Math.round((spentThisMonth + earnedThisMonth) * 100.0) / 100.0 + "</td></tr><tr></tr>" +
+                "<tr><td><b>Percentage of Needs</b>:</td><td>" + Math.round(percNeed * 100.0) / 100.0 + "%</td></tr>" +
+                "<tr><td><b>Percentage of Wants</b>:</td><td>" + Math.round(percWant * 100.0) / 100.0 + "%</td></tr>" +
+                "</table></body></html>"); // Footer
 
         return returnStringHTML;
     }
