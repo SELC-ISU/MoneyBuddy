@@ -17,7 +17,7 @@ public class Gui extends JFrame implements ActionListener {
     private JButton button;
     private JMenuBar bar;
     private JMenu file, help, checkbooks;
-    private JMenuItem edit, close, github, newCheckbook, rmCheckbook;
+    private JMenuItem edit, close, github, newCheckbook, rmCheckbook, stats;
     private Container amount,  memo, date, check, entriesContainer;
     private JTextField field, field2;
     private JLabel dbEntries;
@@ -52,6 +52,7 @@ public class Gui extends JFrame implements ActionListener {
         close = new JMenuItem("Exit");
         checkbooks = new JMenu("Checkbooks");
         github = new JMenuItem("Github");
+        stats =  new JMenuItem("Stats");
         field = new JTextField(10);
         field2 = new JTextField(10);
         checkbox = new JCheckBox("Need?");
@@ -71,6 +72,7 @@ public class Gui extends JFrame implements ActionListener {
         //declaration of the header menu (forgetting the name of it)
         bar.add(file);
         file.add(edit);
+        file.add(stats);
         file.addSeparator();
         file.add(checkbooks);
         refreshCheckbooks();
@@ -118,6 +120,7 @@ public class Gui extends JFrame implements ActionListener {
         newCheckbook.addActionListener(this);
         rmCheckbook.addActionListener(this);
         edit.addActionListener(this);
+        stats.addActionListener(this);
     }
     @Override
     public void actionPerformed(ActionEvent event){
@@ -183,6 +186,9 @@ public class Gui extends JFrame implements ActionListener {
                     System.out.println("Checkbook deleted");
                 }
             }
+        } else if (name.equals("Stats")){
+        //database.getStatistics()
+            JOptionPane.showMessageDialog( null, currentDatabase.getStatistics() , "Stats", 0);
         }
         else {
             System.out.println("Button was pressed, but no function was assigned.");
