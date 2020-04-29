@@ -186,7 +186,7 @@ public class Gui extends JFrame implements ActionListener {
                     System.out.println("Checkbook deleted");
                 }
             }
-        } else if (name.equals("Stats")){
+        } else if (name.equals("Statistics")){
         //database.getStatistics()
             JOptionPane.showMessageDialog( null, currentDatabase.getStatistics() , "Stats", 0);
         }
