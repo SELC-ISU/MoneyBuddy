@@ -1,5 +1,5 @@
 # MoneyBuddy
-SE186X project from EZ Money, a local SQL-backed financing program letting you manage your checkbooks on the computer instead of paper! MoneyBuddy is SQLite backed and written purely in Java, allowing for portability and compatability.
+SE186X project from EZ Money, a local SQLite-backed financing program letting you manage your checkbooks on the computer instead of paper! MoneyBuddy is written purely in Java, allowing for portability and compatability, and all database entries are stored on your local machine in ~/.MoneyBuddy/
 
 # Installation
 You can either clone this repository and compile the code yourself (not recommended), or you can just download the precompiled .jar file (recommended) from the [latest release](https://github.com/SELC-ISU/MoneyBuddy/releases)
