@@ -41,7 +41,7 @@ public class Gui extends JFrame implements ActionListener {
         check = getContentPane();
         entriesContainer = getContentPane();
         //Icon
-        this.setIconImage(new ImageIcon("media/icon-apple-flyingmoney.png").getImage());
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("icon-apple-flyingmoney.png"))); // I have no idea what half of this is, but it was the only thing I could find from StackOverflow that fixed the icon disappearing after packaging into a jar file: https://stackoverflow.com/questions/15424834/java-lang-illegalargumentexception-input-null-when-using-imageio-read-to-lo
         //declaring new objects
         item2 = new JLabel("Memo: ");
         button = new JButton("Submit");
