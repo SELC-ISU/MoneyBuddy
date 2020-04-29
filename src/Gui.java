@@ -188,7 +188,7 @@ public class Gui extends JFrame implements ActionListener {
             }
         } else if (name.equals("Statistics")){
         //database.getStatistics()
-            JOptionPane.showMessageDialog( null, currentDatabase.getStatistics() , "Stats", 0);
+            JOptionPane.showMessageDialog( null, currentDatabase.getStatistics() , "Stats", JOptionPane.INFORMATION_MESSAGE);
         }
         else {
             System.out.println("Button was pressed, but no function was assigned.");
