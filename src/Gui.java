@@ -195,14 +195,18 @@ public class Gui extends JFrame implements ActionListener {
             if (!entryToRemoveString.equals("")) {
                 /* Sanity checks */
                 try {
-                    Double.parseDouble(entryToRemoveString); // Is it a number?
+                    Integer.parseInt(entryToRemoveString); // Is it a number?
                 } catch (NumberFormatException e) {
                     alert("Whoops! You can't have characters in that field!" , JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
                 int entryToRemoveInt = Integer.parseInt(entryToRemoveString);
-                currentDatabase.removeTransaction(entryToRemoveInt);
+                if (currentDatabase.removeTransaction(entryToRemoveInt) == -1) {
+                    alert("Error removing transaction " + entryToRemoveInt + ". Perhaps it doesn't exist?", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    alert("Transaction " + entryToRemoveInt + " removed successfully.", JOptionPane.INFORMATION_MESSAGE);
+                }
                 refreshDataframe();
             } else {
                 alert("Whoops! You can't leave that field blank!", JOptionPane.ERROR_MESSAGE);

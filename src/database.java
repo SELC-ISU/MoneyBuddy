@@ -157,6 +157,10 @@ public class database {
      * @return 0 if entry was deleted successfully, otherwise returns -1 if there was an error (either database is read-only or doesn't exist somehow)
      */
     public int removeTransaction(int id) {
+        if (!doesEntryExist(id)) {
+            return -1;
+        }
+
         try {
             dbcon = DriverManager.getConnection(dbPath);
 
@@ -292,5 +296,32 @@ public class database {
                 "</table></body></html>"); // Footer
 
         return returnStringHTML;
+    }
+
+    /**
+     * Returns boolean whether or not the entry with the given ID exists in this database
+     * @param id the ID of the transaction to check for
+     * @return whether or not the transaction of this the id exists
+     */
+    private boolean doesEntryExist(int id) {
+        ResultSet rs;
+
+        try {
+            dbcon = DriverManager.getConnection(dbPath);
+
+            PreparedStatement stmt = dbcon.prepareStatement("SELECT id FROM transactions WHERE id=" + id);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                dbcon.close();
+                return true;
+            } else {
+                dbcon.close();
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
