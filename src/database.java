@@ -286,7 +286,7 @@ public class database {
 
         /* Format statistics into HTML. I rounded everything to 2 decimal places */
         returnStringHTML = returnStringHTML.concat(
-                "<html><body><h1>Month-to-date statistics</h1><br><table>" + // Header
+                "<html><body><h1>Month-to-date statistics</h1><h3>Checkbook: " + dbName + "</h3><br><table>" + // Header
                 "<tr><td><b>Current Balance</b>:</td><td>$" + Math.round(currentBalance * 100.0) / 100.0 + "</td></tr>" +
                 "<tr><td><b>Spent this month</b>:</td><td>$" + Math.abs(Math.round(spentThisMonth * 100.0) / 100.0) + "</td></tr>" +
                 "<tr><td><b>Earned this month</b>:</td><td>$" + Math.round(earnedThisMonth * 100.0) / 100.0 + "</td></tr>" +
