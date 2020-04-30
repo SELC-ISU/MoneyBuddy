@@ -168,11 +168,22 @@ public class Gui extends JFrame implements ActionListener {
             currentDatabase = new database(name); // Reestablish the current database
             refreshDataframe();
         } else if (name.equals("New checkbook")) {
-            String nameOfNewDatabase = JOptionPane.showInputDialog(this, "What do you want to name this new database?", null);
-            if (nameOfNewDatabase != null && !nameOfNewDatabase.equals("")) {
+            String nameOfNewDatabase = JOptionPane.showInputDialog(this, "What do you want to name this new database?", "New checkbook", JOptionPane.INFORMATION_MESSAGE);
+
+            if (nameOfNewDatabase == null) { // Only occurs if action is cancelled
+                return;
+            } else if (helpers.doesArrayContain(helpers.dbList(), nameOfNewDatabase)) {
+                alert("Whoops! It seems that database already exists. Maybe you're just trying to switch to that database?", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (!nameOfNewDatabase.equals("")) {
                 currentDatabase = new database(nameOfNewDatabase);
                 refreshDataframe();
                 refreshCheckbooks();
+            } else {
+                alert("Whoops! You can't leave that field blank!", JOptionPane.ERROR_MESSAGE);
+                return;
             }
         } else if (name.equals("Remove entry")) {
             String entryToRemoveString = JOptionPane.showInputDialog(this, "What is the ID number of the entry you want to remove?", "Remove entry", JOptionPane.ERROR_MESSAGE);
@@ -195,6 +206,7 @@ public class Gui extends JFrame implements ActionListener {
                 refreshDataframe();
             } else {
                 alert("Whoops! You can't leave that field blank!", JOptionPane.ERROR_MESSAGE);
+                return;
             }
         } else if (name.equals("Delete checkbook")) {
             String checkbookToRemove = JOptionPane.showInputDialog(this, "What is the exact name of the checkbook you wish to remove? (CASE SENSITIVE)", "Remove checkbook", JOptionPane.ERROR_MESSAGE);
@@ -217,12 +229,14 @@ public class Gui extends JFrame implements ActionListener {
                 }
             } else {
                 alert("Whoops! You can't leave that field blank!", JOptionPane.ERROR_MESSAGE);
+                return;
             }
         } else if (name.equals("Statistics")){
             JOptionPane.showMessageDialog( null, currentDatabase.getStatistics() , "Stats", JOptionPane.INFORMATION_MESSAGE);
         }
         else {
             System.out.println("Button was pressed, but no function was assigned.");
+            return;
         }
     }
 
