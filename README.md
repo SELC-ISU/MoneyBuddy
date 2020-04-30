@@ -12,7 +12,7 @@ This program was designed to work straight out of the box, handling all the back
 This is an image of a populated checkbook as it's expected to be used:<br>
 ![home](../assets/home.PNG?raw=true)
 
-This is image shows the file menu as it exists in MoneyBuddy v1.0.2. You can generate statistics, delete entries from the current database, or manage your different checkbooks from here:<br>
+This is image shows the file menu as it exists in MoneyBuddy v1.1.0. You can generate statistics, delete entries from the current database, or manage your different checkbooks from here:<br>
 ![file](../assets/file.PNG?raw=true)
 
 Here you can see an irresponsible user who spent way more than they earned in May of 2020:<br>
