@@ -17,6 +17,11 @@ This is image shows the file menu as it exists in MoneyBuddy v1.0.2. You can gen
 
 Here you can see an irresponsible user who spent way more than they earned in May of 2020:<br>
 ![stats](../assets/stats.PNG?raw=true)
+<br>"<b>Current Balance</b>" - the sum of all entries in the database.
+<br>"<b>Spent this month</b>" - the sum of all entries where amount < 0
+<br>"<b>Earned this month</b>" - the sum of all entries where amount > 0
+<br>"<b>Delta</b>" - the difference between what you've spent and earned this month. If negative, you've spent more than you've earned, and vice versa.
+<br>"<b><i>Percentages</i></b>" - These ratios show how many of your expenses were "needs" vs how many were "wants." This can give you an idea, especially if your delta was negative, where you're spending more of your money. The calculation of these percentages ignore income.
 
 This is what it looks like to have more than 1 checkbook registered. These can be created or destroyed with the two buttons at the top of the menu:<br>
 ![multiple-checkbooks](../assets/multiple-checkbooks.PNG?raw=true)
