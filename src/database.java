@@ -25,15 +25,9 @@ public class database {
         dirPath = System.getProperty("user.home"); //Will be used to store the absolute path of the .MoneyBuddy folder
         File f; // Used to create a new folder if necessary
 
-        if (System.getProperty("os.name").contains("Windows")) {
-            dbPath = dbPath.concat("\\.MoneyBuddy\\" + name + ".db"); //Sets the path to use forward slashes for Windows file paths (the stupid way)
-            dirPath = dirPath.concat("\\.MoneyBuddy\\");
-            dbPath = "jdbc:sqlite:" + dbPath;
-        } else if (System.getProperty("os.name").contains("Linux")) {
-            dbPath = dbPath.concat("/.MoneyBuddy/" + name + ".db"); //Sets the path to use backslashes for Linux file paths (the better way)
-            dirPath = dirPath.concat("/.MoneyBuddy/");
-            dbPath = "jdbc:sqlite:" + dbPath;
-        }
+        dbPath = dbPath.concat("/.MoneyBuddy/" + name + ".db");
+        dirPath = dirPath.concat("/.MoneyBuddy/");
+        dbPath = "jdbc:sqlite:" + dbPath;
 
         /* -- Create directory if it doesn't already exist -- */
         f = new File(dirPath);
