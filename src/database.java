@@ -138,8 +138,12 @@ public class database {
                 need = -1;
             }
 
-            String insertString = "INSERT INTO transactions(date,memo,amount,need) VALUES (\"" + dateObj.toString() + "\",\"" + memo + "\"," + amount + "," + need + ")"; //Forms the table insert statement
-            PreparedStatement stmt = dbcon.prepareStatement(insertString); //Formats the statement from the string
+            /* Utilizes PreparedStatement to cleanse user input of potentially malicious patterns */
+            PreparedStatement stmt = dbcon.prepareStatement("INSERT INTO transactions(date,memo,amount,need) VALUES (?,?,?,?)");
+            stmt.setString(1, dateObj.toString());
+            stmt.setString(2, memo);
+            stmt.setDouble(3, amount);
+            stmt.setInt(4, need);
 
             stmt.execute(); //Runs the statement
 
@@ -164,7 +168,8 @@ public class database {
         try {
             dbcon = DriverManager.getConnection(dbPath);
 
-            PreparedStatement stmt = dbcon.prepareStatement("DELETE FROM transactions WHERE id=" + id);
+            PreparedStatement stmt = dbcon.prepareStatement("DELETE FROM transactions WHERE id=?");
+            stmt.setInt(1, id);
             stmt.execute();
 
             dbcon.close();
@@ -309,7 +314,8 @@ public class database {
         try {
             dbcon = DriverManager.getConnection(dbPath);
 
-            PreparedStatement stmt = dbcon.prepareStatement("SELECT id FROM transactions WHERE id=" + id);
+            PreparedStatement stmt = dbcon.prepareStatement("SELECT id FROM transactions WHERE id=?");
+            stmt.setInt(1, id);
             rs = stmt.executeQuery();
 
             if (rs.next()) {

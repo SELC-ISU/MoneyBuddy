@@ -148,14 +148,6 @@ public class Gui extends JFrame implements ActionListener {
                 return;
            }
 
-            /* Dirty fix for SQL injections */
-            for (int i = 0; i < memoInput.length(); i++) {
-                if (memoInput.charAt(i) == '\"') {
-                    alert("Uh oh! Are you trying an SQL injection?<br>Sorry, we don't allow quotation marks in the memo field.", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            }
-
             if (!amountInput.equals("") && !memoInput.equals("")) { // We were going to use .isBlank(), but turns out that's literally a Java 11 function and we otherwise have Java 8 compatibility
                 field.setText("");
                 field2.setText("");
