@@ -138,7 +138,7 @@ public class database {
                 need = -1;
             }
 
-            String insertString = "INSERT INTO transactions(date,memo,amount,need) VALUES ('" + dateObj.toString() + "','" + memo + "'," + amount + "," + need + ")"; //Forms the table insert statement
+            String insertString = "INSERT INTO transactions(date,memo,amount,need) VALUES (\"" + dateObj.toString() + "\",\"" + memo + "\"," + amount + "," + need + ")"; //Forms the table insert statement
             PreparedStatement stmt = dbcon.prepareStatement(insertString); //Formats the statement from the string
 
             stmt.execute(); //Runs the statement

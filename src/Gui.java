@@ -148,6 +148,14 @@ public class Gui extends JFrame implements ActionListener {
                 return;
            }
 
+            /* Dirty fix for SQL injections */
+            for (int i = 0; i < memoInput.length(); i++) {
+                if (memoInput.charAt(i) == '\"') {
+                    alert("Uh oh! Are you trying an SQL injection?<br>Sorry, we don't allow quotation marks in the memo field.", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
             if (!amountInput.equals("") && !memoInput.equals("")) { // We were going to use .isBlank(), but turns out that's literally a Java 11 function and we otherwise have Java 8 compatibility
                 field.setText("");
                 field2.setText("");
@@ -171,6 +179,15 @@ public class Gui extends JFrame implements ActionListener {
             } else if (helpers.doesArrayContain(helpers.dbList(), nameOfNewDatabase)) {
                 alert("Whoops! It seems that database already exists. Maybe you're just trying to switch to that database?", JOptionPane.ERROR_MESSAGE);
                 return;
+            }
+
+            /* Most file systems don't support fancy characters */
+            for (int i = 0; i < nameOfNewDatabase.length(); i++) {
+                char thisChar = nameOfNewDatabase.charAt(i);
+                if (!(Character.isLetterOrDigit(thisChar) || thisChar == ' ' || thisChar == '-' || thisChar == '.')) { // List of supported filename characters
+                    alert("Hmmm sorry, we don't seem to support the " + thisChar + " character.<br>Maybe try a different name.", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
             }
 
             if (!nameOfNewDatabase.equals("")) {
