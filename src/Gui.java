@@ -149,19 +149,15 @@ public class Gui extends JFrame implements ActionListener {
            }
 
             if (!amountInput.equals("") && !memoInput.equals("")) { // We were going to use .isBlank(), but turns out that's literally a Java 11 function and we otherwise have Java 8 compatibility
-                System.out.println(amountInput + " is what is in the amount text box.");
                 field.setText("");
-                System.out.println(memoInput + " is what is in the memo text box");
                 field2.setText("");
                 dateInput = (Date)spinner.getValue();
-                System.out.println(dateInput);
                 if(checkbox.isSelected()){
                     need = 1;
                     checkbox.setSelected(false);
                 } else {
                     need = 0;
                 }
-                System.out.println(need);
                 AddEntry(amountInput,  memoInput, dateInput, need);
             }
         } else if (helpers.doesArrayContain(dbList, name)) { // If this is a checkbook (if the name of the button matches any from the list of databases)
@@ -242,10 +238,6 @@ public class Gui extends JFrame implements ActionListener {
             }
         } else if (name.equals("Statistics")){
             JOptionPane.showMessageDialog( null, currentDatabase.getStatistics() , "Stats", JOptionPane.INFORMATION_MESSAGE);
-        }
-        else {
-            System.out.println("Button was pressed, but no function was assigned.");
-            return;
         }
     }
 
