@@ -226,6 +226,11 @@ public class Gui extends JFrame implements ActionListener {
                     File f = new File(System.getProperty("user.home") + "/.MoneyBuddy/" + checkbookToRemove + ".db");
                     if (f.delete()) {
                         alert("Checkbook \"" + checkbookToRemove + "\" deleted successfully.", JOptionPane.INFORMATION_MESSAGE);
+
+                        if (currentDatabase.getDbName().equals(checkbookToRemove)) { // If the checkbook you deleted was the one you're in, switch back to the default database
+                            currentDatabase = new database("default");
+                            refreshDataframe();
+                        }
                     } else {
                         alert("Checkbook \"" + checkbookToRemove + "\" does not exist.", JOptionPane.ERROR_MESSAGE);
                     }
