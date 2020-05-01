@@ -192,17 +192,22 @@ public class database {
 
             while (rs.next()) {
                 String need = "unknown";
+                String amountPrefix = "<p style='color:#000000'>$"; // This color will be replaced in a few lines...
+                String amountSuffix = "</p>";
 
-                // Classifies need/want
+                // Classifies need/want and sets amountPrefix color
                 if (rs.getInt("need") == -1) {
                     need = "N/A";
+                    amountPrefix = "<p style='color:#228b22'>$"; // Sets color to forest green because this was income
                 } else if (rs.getInt("need") == 1) {
                     need = "need";
+                    amountPrefix = "<p style='color:#b22222'>$"; // Sets color to red because this was a withdraw
                 } else if (rs.getInt("need") == 0) {
                     need = "want";
+                    amountPrefix = "<p style='color:#b22222'>$"; // Sets color to red because this was a withdraw
                 }
 
-                entries.add("<tr><td>" + rs.getString("id") + "</td><td>" + rs.getString("date") + "</td><td>" + need + "</td><td>$" + rs.getString("amount") + "</td><td>" + rs.getString("memo") + "</td></tr>");
+                entries.add("<tr><td><b style='color:#1e90ff;'>" + rs.getString("id") + "</b></td><td>" + rs.getString("date") + "</td><td>" + need + "</td><td>" + amountPrefix + rs.getString("amount") + amountSuffix + "</td><td>" + rs.getString("memo") + "</td></tr>");
             }
 
             dbcon.close();
