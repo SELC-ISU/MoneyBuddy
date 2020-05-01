@@ -243,6 +243,7 @@ public class database {
         double currentBalance = this.getBal();
         double spentThisMonth = 0;
         double earnedThisMonth = 0;
+        boolean areThereAnyWithdraws = true;
 
         /* Retrieve results from the database */
         try {
@@ -274,13 +275,28 @@ public class database {
                 }
             }
 
-            percNeed = ((double) totalNeeds / (totalNeeds + totalWants)) * 100;
-            percWant = ((double) totalWants / (totalNeeds + totalWants)) * 100;
+            /* Check to see if there were any withdraws. If there were, calculate percentages. If not, set flag.
+            The flag will be checked later, and if it's false, percentages won't be displayed */
+            if (totalNeeds + totalWants !=  0) {
+                percNeed = ((double) totalNeeds / (totalNeeds + totalWants)) * 100;
+                percWant = ((double) totalWants / (totalNeeds + totalWants)) * 100;
+            } else {
+                areThereAnyWithdraws = false;
+            }
 
             dbcon.close();
         } catch (SQLException e) {
             e.printStackTrace();
             return "Unknown error parsing the database results.";
+        }
+
+        String colorOfDelta = "";
+        if (spentThisMonth + earnedThisMonth > 0) {
+            colorOfDelta = "green";
+        } else if (spentThisMonth + earnedThisMonth < 0) {
+            colorOfDelta = "red";
+        } else {
+            colorOfDelta = "black";
         }
 
         /* Format statistics into HTML. I rounded everything to 2 decimal places */
@@ -289,10 +305,13 @@ public class database {
                 "<tr><td><b>Current Balance</b>:</td><td>$" + Math.round(currentBalance * 100.0) / 100.0 + "</td></tr>" +
                 "<tr><td><b>Spent this month</b>:</td><td>$" + Math.abs(Math.round(spentThisMonth * 100.0) / 100.0) + "</td></tr>" +
                 "<tr><td><b>Earned this month</b>:</td><td>$" + Math.round(earnedThisMonth * 100.0) / 100.0 + "</td></tr>" +
-                "<tr><td><b>Delta</b>:</td><td>$" + Math.round((spentThisMonth + earnedThisMonth) * 100.0) / 100.0 + "</td></tr><tr></tr>" +
-                "<tr><td><b>Percentage of Needs</b>:</td><td>" + Math.round(percNeed * 100.0) / 100.0 + "%</td></tr>" +
-                "<tr><td><b>Percentage of Wants</b>:</td><td>" + Math.round(percWant * 100.0) / 100.0 + "%</td></tr>" +
-                "</table></body></html>"); // Footer
+                "<tr><td><b color='" + colorOfDelta + "'>Delta</b>:</td><td>$" + Math.round((spentThisMonth + earnedThisMonth) * 100.0) / 100.0 + "</td></tr>");
+        if (areThereAnyWithdraws) {
+            returnStringHTML = returnStringHTML.concat("<tr></tr><tr><td><b>Percentage of Needs</b>:</td><td>" + Math.round(percNeed * 100.0) / 100.0 + "%</td></tr>");
+            returnStringHTML = returnStringHTML.concat("<tr><td><b>Percentage of Wants</b>:</td><td>" + Math.round(percWant * 100.0) / 100.0 + "%</td></tr>");
+        }
+
+        returnStringHTML = returnStringHTML.concat("</table></body></html>"); // Footer
 
         return returnStringHTML;
     }
