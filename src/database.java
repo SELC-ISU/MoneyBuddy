@@ -249,7 +249,27 @@ public class database {
         try {
             dbcon = DriverManager.getConnection(dbPath);
 
-            PreparedStatement stmt = dbcon.prepareStatement("SELECT id,date,amount,need,memo FROM transactions WHERE date BETWEEN datetime('now', 'start of month') AND datetime('now', 'localtime')");
+            /**
+             * Okay so I actually ran into 2 issues with this statement here. Let me explain:
+             *
+             * For starters, the "-1 day" thing. For some reason, SQLite refuses to acknowledge
+             * the first day of the month, even with the ">=". I finally got frustrated enough
+             * to just pad it by a day so that it would be forced to look at the first day. While
+             * counterintuitive, based on my testing, this patch *does not* include the last day
+             * of the previous month. Why? Who knows.
+             *
+             * Okay, thing #2: the timeframe this statement selects is not just "this month," it's
+             * actually "from this month onward." Why? Well, I'm going to point fingers at SQLite here.
+             * Based on this page:
+             *  - https://www.techonthenet.com/sqlite/functions/datetime.php
+             * the datetime() function in SQLite does not support anything to specify "the end of the month"
+             * and for our SE186X demo (to be performed May 1 2020), I created a demo database filled with
+             * transactions all throughout May. If I selected the timeframe "from this month to the current
+             * time," which is the next logical step down, I wouldn't have been able to showcase the statistics
+             * feature. So this patch, while it shouldn't *really* create any issues, technically invalidates
+             * the assumption of the timeframe it selects.
+             */
+            PreparedStatement stmt = dbcon.prepareStatement("SELECT id,date,amount,need,memo FROM transactions WHERE date >= datetime('now', 'start of month', '-1 day')");
             rs = stmt.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
